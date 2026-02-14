@@ -636,6 +636,335 @@
             z-index: 9999
         }
 
+        /* ===== Admin Login/Signup Screen ===== */
+        .admin-login-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity .5s ease
+        }
+
+        .admin-login-screen.hidden {
+            opacity: 0;
+            pointer-events: none
+        }
+
+        .admin-login-screen::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201, 168, 76, .08), transparent 70%);
+            border-radius: 50%
+        }
+
+        .admin-login-screen::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(201, 168, 76, .06), transparent 70%);
+            border-radius: 50%
+        }
+
+        .admin-login-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 0;
+            max-width: 440px;
+            width: 92%;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .5);
+            text-align: center;
+            animation: loginSlideUp .6s ease;
+            overflow: hidden;
+            position: relative;
+            z-index: 1
+        }
+
+        @keyframes loginSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            20%,
+            60% {
+                transform: translateX(-8px)
+            }
+
+            40%,
+            80% {
+                transform: translateX(8px)
+            }
+        }
+
+        .login-card-header {
+            padding: 36px 40px 0;
+        }
+
+        .login-card-header .login-logo {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 4px
+        }
+
+        .login-card-header .login-logo span {
+            color: var(--gold)
+        }
+
+        .login-card-header .login-subtitle {
+            font-size: .75rem;
+            color: var(--grey-400);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin: 24px 40px 0;
+            border-bottom: 2px solid var(--grey-200)
+        }
+
+        .auth-tabs button {
+            flex: 1;
+            padding: 14px 0;
+            font-size: .8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--grey-400);
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: var(--transition);
+            font-family: var(--font-body)
+        }
+
+        .auth-tabs button.active {
+            color: var(--black);
+            border-bottom-color: var(--gold)
+        }
+
+        .auth-tabs button:hover:not(.active) {
+            color: var(--grey-600)
+        }
+
+        .login-card-body {
+            padding: 28px 40px 36px
+        }
+
+        .auth-form {
+            display: none
+        }
+
+        .auth-form.active {
+            display: block
+        }
+
+        .login-field {
+            position: relative;
+            margin-bottom: 18px;
+            text-align: left
+        }
+
+        .login-field label {
+            display: block;
+            font-size: .72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--grey-500);
+            margin-bottom: 6px
+        }
+
+        .login-field input {
+            width: 100%;
+            padding: 13px 16px 13px 44px;
+            border: 2px solid var(--grey-200);
+            border-radius: var(--radius-sm);
+            font-size: .9rem;
+            transition: var(--transition);
+            background: var(--grey-50);
+            font-family: var(--font-body)
+        }
+
+        .login-field input:focus {
+            border-color: var(--gold);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(201, 168, 76, .1);
+            outline: none
+        }
+
+        .login-field .field-icon {
+            position: absolute;
+            bottom: 13px;
+            left: 14px;
+            font-size: 1.1rem;
+            color: var(--grey-400)
+        }
+
+        .login-field .field-error {
+            font-size: .7rem;
+            color: var(--danger);
+            margin-top: 4px;
+            min-height: 0
+        }
+
+        .login-msg {
+            font-size: .82rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+            min-height: 22px;
+            border-radius: var(--radius-sm);
+            padding: 0
+        }
+
+        .login-msg.error {
+            color: var(--danger)
+        }
+
+        .login-msg.success {
+            color: var(--success)
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--black);
+            color: var(--white);
+            font-size: .82rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            font-family: var(--font-body);
+            margin-top: 4px
+        }
+
+        .login-btn:hover {
+            background: var(--gold);
+            color: var(--black)
+        }
+
+        .login-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed
+        }
+
+        .pw-strength {
+            height: 3px;
+            border-radius: 3px;
+            margin-top: 6px;
+            transition: all .3s ease;
+            background: var(--grey-200)
+        }
+
+        .pw-strength .pw-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: all .3s ease;
+            width: 0
+        }
+
+        .pw-strength .pw-bar.weak {
+            width: 33%;
+            background: var(--danger)
+        }
+
+        .pw-strength .pw-bar.medium {
+            width: 66%;
+            background: var(--warning)
+        }
+
+        .pw-strength .pw-bar.strong {
+            width: 100%;
+            background: var(--success)
+        }
+
+        .admin-layout.locked {
+            display: none
+        }
+
+        .admin-nav .logout-link {
+            color: var(--danger) !important
+        }
+
+        .admin-nav .logout-link:hover {
+            background: rgba(231, 76, 60, .1) !important
+        }
+
+        .admin-user-badge {
+            padding: 16px 24px;
+            border-top: 1px solid var(--grey-800);
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .admin-user-badge .avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--gold);
+            color: var(--black);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            font-weight: 700;
+            flex-shrink: 0
+        }
+
+        .admin-user-badge .uinfo {
+            overflow: hidden
+        }
+
+        .admin-user-badge .uinfo .uname {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .admin-user-badge .uinfo .urole {
+            font-size: .68rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: .5px
+        }
+
         @media(max-width:768px) {
             .admin-layout {
                 grid-template-columns: 1fr
@@ -672,7 +1001,75 @@
 </head>
 
 <body class="admin-body">
-    <div class="admin-layout">
+    <!-- LOGIN / SIGNUP SCREEN -->
+    <div class="admin-login-screen" id="adminLoginScreen">
+        <div class="admin-login-card">
+            <div class="login-card-header">
+                <div class="login-logo">PREMIUM<span>.</span></div>
+                <div class="login-subtitle">Admin Panel</div>
+            </div>
+            <div class="auth-tabs">
+                <button class="active" onclick="switchAuthTab('login',this)">Sign In</button>
+                <button onclick="switchAuthTab('signup',this)">Sign Up</button>
+            </div>
+            <div class="login-card-body">
+                <!-- LOGIN FORM -->
+                <form class="auth-form active" id="loginForm" onsubmit="handleAdminLogin(event)">
+                    <div class="login-msg" id="loginMsg"></div>
+                    <div class="login-field">
+                        <label>Username or Email</label>
+                        <span class="material-symbols-outlined field-icon">person</span>
+                        <input type="text" id="loginUser" placeholder="Enter username or email" autocomplete="username"
+                            required autofocus>
+                    </div>
+                    <div class="login-field">
+                        <label>Password</label>
+                        <span class="material-symbols-outlined field-icon">lock</span>
+                        <input type="password" id="loginPass" placeholder="Enter password"
+                            autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="login-btn">Sign In</button>
+                </form>
+                <!-- SIGNUP FORM -->
+                <form class="auth-form" id="signupForm" onsubmit="handleAdminSignup(event)">
+                    <div class="login-msg" id="signupMsg"></div>
+                    <div class="login-field">
+                        <label>Full Name</label>
+                        <span class="material-symbols-outlined field-icon">badge</span>
+                        <input type="text" id="signupName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="login-field">
+                        <label>Email</label>
+                        <span class="material-symbols-outlined field-icon">mail</span>
+                        <input type="email" id="signupEmail" placeholder="Enter email address" required>
+                    </div>
+                    <div class="login-field">
+                        <label>Username</label>
+                        <span class="material-symbols-outlined field-icon">person</span>
+                        <input type="text" id="signupUser" placeholder="Choose a username" autocomplete="off" required
+                            minlength="3">
+                    </div>
+                    <div class="login-field">
+                        <label>Password</label>
+                        <span class="material-symbols-outlined field-icon">lock</span>
+                        <input type="password" id="signupPass" placeholder="Create a password"
+                            autocomplete="new-password" required minlength="6" oninput="updatePwStrength(this.value)">
+                        <div class="pw-strength">
+                            <div class="pw-bar" id="pwBar"></div>
+                        </div>
+                    </div>
+                    <div class="login-field">
+                        <label>Confirm Password</label>
+                        <span class="material-symbols-outlined field-icon">lock</span>
+                        <input type="password" id="signupConfirm" placeholder="Re-enter password" required>
+                    </div>
+                    <button type="submit" class="login-btn">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-layout locked" id="adminLayout">
         <!-- SIDEBAR -->
         <aside class="admin-sidebar">
             <div class="logo">PREMIUM<span>.</span> <small>Admin</small></div>
@@ -691,7 +1088,11 @@
                 <a
                     onclick="if(confirm('Reset ALL data to defaults? This removes all admin changes.')){AdminStore.resetToDefaults();location.reload()}"><span
                         class="material-symbols-outlined">restart_alt</span> Reset to Defaults</a>
+                <div class="nav-divider"></div>
+                <a onclick="adminLogout()" class="logout-link"><span class="material-symbols-outlined">logout</span>
+                    Logout</a>
             </nav>
+            <div class="admin-user-badge" id="adminUserBadge"></div>
             <div class="store-link"><a href="index.html" target="_blank"><span class="material-symbols-outlined"
                         style="font-size:1rem">storefront</span> View Storefront</a></div>
         </aside>
@@ -1279,9 +1680,135 @@
             reader.readAsText(file);
             e.target.value = '';
         }
+        // ===================== ADMIN ACCOUNTS DATABASE =====================
+        function getAdminDB() {
+            let db = JSON.parse(localStorage.getItem('pmcAdminDB') || 'null');
+            if (!db || !Array.isArray(db) || db.length === 0) {
+                db = [{ id: 1, name: 'Admin', email: 'admin@premium.com', username: 'admin', password: 'admin123', role: 'Super Admin', createdAt: new Date().toISOString() }];
+                localStorage.setItem('pmcAdminDB', JSON.stringify(db));
+            }
+            return db;
+        }
+        function saveAdminDB(db) { localStorage.setItem('pmcAdminDB', JSON.stringify(db)); }
+        function getSession() { return JSON.parse(localStorage.getItem('pmcAdminSession') || 'null'); }
+        function isAdminLoggedIn() { return !!getSession(); }
+
+        // ===================== AUTH TABS =====================
+        function switchAuthTab(tab, btn) {
+            document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.getElementById(tab + 'Form').classList.add('active');
+            document.getElementById('loginMsg').textContent = '';
+            document.getElementById('signupMsg').textContent = '';
+        }
+
+        // ===================== LOGIN =====================
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const input = document.getElementById('loginUser').value.trim().toLowerCase();
+            const pass = document.getElementById('loginPass').value;
+            const msgEl = document.getElementById('loginMsg');
+            const db = getAdminDB();
+
+            const user = db.find(u => (u.username.toLowerCase() === input || u.email.toLowerCase() === input) && u.password === pass);
+            if (user) {
+                localStorage.setItem('pmcAdminSession', JSON.stringify({ id: user.id, username: user.username, name: user.name, role: user.role }));
+                unlockAdmin();
+            } else {
+                msgEl.className = 'login-msg error';
+                msgEl.textContent = 'Invalid username/email or password';
+                document.getElementById('loginPass').value = '';
+                document.getElementById('loginPass').focus();
+                const card = document.querySelector('.admin-login-card');
+                card.style.animation = 'none';
+                void card.offsetHeight;
+                card.style.animation = 'shake .4s ease';
+            }
+        }
+
+        // ===================== SIGNUP =====================
+        function handleAdminSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+            const username = document.getElementById('signupUser').value.trim().toLowerCase();
+            const pass = document.getElementById('signupPass').value;
+            const confirm = document.getElementById('signupConfirm').value;
+            const msgEl = document.getElementById('signupMsg');
+            const db = getAdminDB();
+
+            // Validation
+            if (pass.length < 6) { showSignupErr(msgEl, 'Password must be at least 6 characters'); return; }
+            if (pass !== confirm) { showSignupErr(msgEl, 'Passwords do not match'); return; }
+            if (db.find(u => u.username.toLowerCase() === username)) { showSignupErr(msgEl, 'Username already taken'); return; }
+            if (db.find(u => u.email.toLowerCase() === email)) { showSignupErr(msgEl, 'Email already registered'); return; }
+
+            const newUser = {
+                id: db.length > 0 ? Math.max(...db.map(u => u.id)) + 1 : 1,
+                name, email, username, password: pass,
+                role: 'Admin',
+                createdAt: new Date().toISOString()
+            };
+            db.push(newUser);
+            saveAdminDB(db);
+
+            // Switch to login tab with success message
+            document.getElementById('signupForm').reset();
+            document.querySelector('.auth-tabs button:first-child').click();
+            const loginMsg = document.getElementById('loginMsg');
+            loginMsg.className = 'login-msg success';
+            loginMsg.textContent = 'Account created! Sign in with your credentials.';
+            document.getElementById('loginUser').value = username;
+            document.getElementById('loginPass').focus();
+        }
+        function showSignupErr(el, msg) {
+            el.className = 'login-msg error'; el.textContent = msg;
+            const card = document.querySelector('.admin-login-card');
+            card.style.animation = 'none'; void card.offsetHeight; card.style.animation = 'shake .4s ease';
+        }
+
+        // ===================== PASSWORD STRENGTH =====================
+        function updatePwStrength(val) {
+            const bar = document.getElementById('pwBar');
+            bar.className = 'pw-bar';
+            if (val.length === 0) { bar.className = 'pw-bar'; return; }
+            let score = 0;
+            if (val.length >= 6) score++;
+            if (val.length >= 10) score++;
+            if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+            if (/\d/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+            if (score <= 2) bar.className = 'pw-bar weak';
+            else if (score <= 3) bar.className = 'pw-bar medium';
+            else bar.className = 'pw-bar strong';
+        }
+
+        // ===================== SESSION =====================
+        function unlockAdmin() {
+            document.getElementById('adminLoginScreen').classList.add('hidden');
+            document.getElementById('adminLayout').classList.remove('locked');
+            renderDashboard();
+            // Show user badge in sidebar
+            const session = getSession();
+            if (session) {
+                const initials = session.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                document.getElementById('adminUserBadge').innerHTML = `
+                    <div class="avatar">${initials}</div>
+                    <div class="uinfo"><div class="uname">${session.name}</div><div class="urole">${session.role}</div></div>`;
+            }
+        }
+
+        function adminLogout() {
+            if (!confirm('Are you sure you want to logout?')) return;
+            localStorage.removeItem('pmcAdminSession');
+            location.reload();
+        }
 
         // ===================== INIT =====================
-        renderDashboard();
+        if (isAdminLoggedIn()) {
+            unlockAdmin();
+        }
     </script>
 </body>
 

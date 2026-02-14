@@ -227,6 +227,60 @@ const Store = {
   }
 };
 
+// ============================================================
+// USER ACCOUNTS DATABASE (localStorage-based)
+// ============================================================
+
+const UserDB = {
+  _key: 'pmcUsersDB',
+  getAll() {
+    return JSON.parse(localStorage.getItem(this._key) || '[]');
+  },
+  _save(users) {
+    localStorage.setItem(this._key, JSON.stringify(users));
+  },
+  findByEmail(email) {
+    return this.getAll().find(u => u.email.toLowerCase() === email.toLowerCase());
+  },
+  findByPhone(phone) {
+    const clean = phone.replace(/\D/g, '');
+    return this.getAll().find(u => u.phone.replace(/\D/g, '') === clean);
+  },
+  register({ name, email, phone, password }) {
+    const users = this.getAll();
+    // Duplicate checks
+    if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+      return { ok: false, error: 'This email is already registered. Please login instead.' };
+    }
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone && users.find(u => u.phone.replace(/\D/g, '') === cleanPhone)) {
+      return { ok: false, error: 'This phone number is already registered.' };
+    }
+    const user = {
+      id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+      name, email: email.toLowerCase(), phone, password,
+      createdAt: new Date().toISOString()
+    };
+    users.push(user);
+    this._save(users);
+    return { ok: true, user };
+  },
+  authenticate(email, password) {
+    const user = this.findByEmail(email);
+    if (!user) return { ok: false, error: 'No account found with this email.' };
+    if (user.password !== password) return { ok: false, error: 'Incorrect password. Please try again.' };
+    return { ok: true, user };
+  },
+  updateUser(id, updates) {
+    const users = this.getAll();
+    const idx = users.findIndex(u => u.id === id);
+    if (idx === -1) return false;
+    Object.assign(users[idx], updates);
+    this._save(users);
+    return true;
+  }
+};
+
 // UTILITY FUNCTIONS
 function formatPrice(price) {
   return '₹' + price.toLocaleString('en-IN');
