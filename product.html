@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product — PREMIUM.</title>
+  <meta name="description" content="Premium men's shirt with detailed specifications, reviews, and sizing guide.">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div id="navbar"></div>
+  <div class="product-detail">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a><span class="sep">/</span>
+        <a href="category.html">Shirts</a><span class="sep">/</span>
+        <span class="current" id="breadcrumbName">Product</span>
+      </div>
+      <div class="pd-layout">
+        <div class="pd-gallery">
+          <div class="pd-main-image"><img id="mainImage" src="" alt="Product"></div>
+          <div class="pd-thumbnails" id="thumbnails"></div>
+        </div>
+        <div class="pd-info" id="pdInfo"></div>
+      </div>
+      <div class="related-section">
+        <div class="section-header">
+          <div class="overline">You May Also Like</div>
+          <h2>Related Products</h2>
+        </div>
+        <div class="products-grid" id="relatedGrid"></div>
+      </div>
+    </div>
+  </div>
+  <div id="footer"></div>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('navbar').innerHTML = getNavbarHTML();
+    document.getElementById('footer').innerHTML = getFooterHTML();
+    initApp();
+
+    const pid = new URLSearchParams(window.location.search).get('id');
+    const product = getProduct(pid);
+    if (!product) { document.querySelector('.pd-layout').innerHTML = '<div class="empty-state"><h2>Product not found</h2><p>The product you are looking for does not exist.</p><a href="category.html" class="btn btn-primary">Browse Shirts</a></div>'; }
+    else { renderProduct(product); }
+
+    function renderProduct(p) {
+      document.title = `${p.name} — PREMIUM.`;
+      document.getElementById('breadcrumbName').textContent = p.name;
+      document.getElementById('mainImage').src = p.images[0];
+      document.getElementById('mainImage').alt = p.name;
+
+      // Thumbnails
+      document.getElementById('thumbnails').innerHTML = p.images.map((img, i) =>
+        `<button class="${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}" alt="View ${i + 1}"></button>`
+      ).join('');
+
+      const discount = getDiscount(p.originalPrice, p.price);
+      const inWl = Store.isInWishlist(p.id);
+
+      document.getElementById('pdInfo').innerHTML = `
+        <div class="pd-category">${p.category.replace('-', ' ')}</div>
+        <h1>${p.name}</h1>
+        <div class="pd-rating">
+          <span class="stars">${getStars(p.rating)}</span>
+          <strong>${p.rating}</strong>
+          <a href="#reviews">(${p.reviews} reviews)</a>
+        </div>
+        <div class="pd-price-block">
+          <span class="current">${formatPrice(p.price)}</span>
+          <span class="original">${formatPrice(p.originalPrice)}</span>
+          <span class="discount">${discount}% OFF</span>
+        </div>
+        ${p.badge ? `<span class="badge ${p.badge === 'bestseller' ? 'badge-gold' : p.badge === 'new' ? 'badge-black' : 'badge-danger'}" style="margin-bottom:20px">${p.badge === 'bestseller' ? 'Best Seller' : p.badge === 'new' ? 'New Arrival' : 'Limited Edition'}</span>` : ''}
+        <div class="pd-option-group">
+          <label>Size <a href="#" onclick="event.preventDefault();alert('Size Guide:\\n\\nS: Chest 36-38\\\"\\nM: Chest 38-40\\\"\\nL: Chest 40-42\\\"\\nXL: Chest 42-44\\\"\\nXXL: Chest 44-46\\\"')" style="font-weight:400;color:var(--gold-dark);font-size:.8rem;margin-left:8px">Size Guide</a></label>
+          <div class="size-options">${p.sizes.map((s, i) => `<button class="${i === 0 ? 'active' : ''}" onclick="selectSize(this)">${s}</button>`).join('')}</div>
+        </div>
+        <div class="pd-option-group">
+          <label>Color</label>
+          <div class="color-options">${p.colors.map((c, i) => `<button class="${i === 0 ? 'active' : ''}" onclick="selectColor(this)" title="${c}"><div class="color-swatch" style="background:${c}"></div></button>`).join('')}</div>
+        </div>
+        <p style="font-size:.85rem;color:${p.stock > 10 ? 'var(--success)' : p.stock > 0 ? 'var(--warning)' : 'var(--danger)'}; font-weight:600;margin-top:8px">
+          ${p.stock > 10 ? '✓ In Stock' : p.stock > 0 ? `Only ${p.stock} left!` : 'Out of Stock'}
+        </p>
+        <div class="pd-actions">
+          <button class="btn btn-primary btn-lg" onclick="addToCartFromDetail()" ${p.stock === 0 ? 'disabled' : ''}>
+            <span class="material-symbols-outlined">shopping_bag</span> Add to Cart
+          </button>
+          <button class="btn btn-gold btn-lg" onclick="buyNow()" ${p.stock === 0 ? 'disabled' : ''}>Buy Now</button>
+          <button class="btn btn-secondary btn-icon" style="width:56px;height:56px;flex-shrink:0" onclick="toggleWishlistBtn(${p.id}, this)" title="Wishlist">
+            <span class="material-symbols-outlined">${inWl ? 'favorite' : 'favorite_border'}</span>
+          </button>
+        </div>
+        <div class="delivery-check">
+          <input type="text" placeholder="Enter pincode for delivery estimate" maxlength="6" id="pincodeInput">
+          <button class="btn btn-sm btn-secondary" onclick="checkDelivery()">Check</button>
+        </div>
+        <div id="deliveryResult" style="margin-top:8px;font-size:.85rem;color:var(--success)"></div>
+        <div class="pd-details">
+          <div class="detail-tabs">
+            <button class="active" onclick="switchTab(this,'desc')">Description</button>
+            <button onclick="switchTab(this,'specs')">Specifications</button>
+            <button onclick="switchTab(this,'care')">Care</button>
+            <button onclick="switchTab(this,'returns')">Returns</button>
+          </div>
+          <div class="detail-content" id="tabDesc">
+            <p>${p.description}</p>
+            <p style="margin-top:12px">Every PREMIUM. shirt is crafted with meticulous attention to detail, using only the finest materials sourced from renowned mills. Our commitment to quality ensures a garment that not only looks exceptional but feels remarkable against your skin.</p>
+          </div>
+          <div class="detail-content" id="tabSpecs" style="display:none">
+            <table>
+              <tr><td>Fabric</td><td>${p.fabric}</td></tr>
+              <tr><td>Fit</td><td>${p.fit.charAt(0).toUpperCase() + p.fit.slice(1)}</td></tr>
+              <tr><td>Sleeve</td><td>${p.sleeve === 'full' ? 'Full Sleeve' : 'Half Sleeve'}</td></tr>
+              <tr><td>Occasion</td><td>${p.occasion.charAt(0).toUpperCase() + p.occasion.slice(1)}</td></tr>
+              <tr><td>Pattern</td><td>${p.category.replace('-', ' ').replace(/^\w/, c => c.toUpperCase())}</td></tr>
+              <tr><td>Available Sizes</td><td>${p.sizes.join(', ')}</td></tr>
+            </table>
+          </div>
+          <div class="detail-content" id="tabCare" style="display:none"><p>${p.care}</p></div>
+          <div class="detail-content" id="tabReturns" style="display:none">
+            <p><strong>Easy 30-Day Returns</strong> — Not satisfied? Return within 30 days for a full refund.</p>
+            <p><strong>Free Exchange</strong> — Wrong size? We'll exchange it for free.</p>
+            <p><strong>Quality Guarantee</strong> — Every product is backed by our premium quality guarantee.</p>
+          </div>
+        </div>
+        <div id="reviews" style="margin-top:40px">
+          <h2 style="font-size:1.3rem;margin-bottom:20px">Customer Reviews</h2>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:20px;background:var(--grey-50);border-radius:var(--radius-md)">
+            <div style="text-align:center"><div style="font-size:2.5rem;font-weight:700">${p.rating}</div><div class="stars" style="color:var(--gold)">${getStars(p.rating)}</div><div style="font-size:.8rem;color:var(--grey-400)">${p.reviews} reviews</div></div>
+          </div>
+          <div id="reviewsList"></div>
+          <h3 style="font-size:1rem;margin:24px 0 12px">Write a Review</h3>
+          <form onsubmit="event.preventDefault();showToast('Thank you for your review!');this.reset();">
+            <div class="form-group"><label>Rating</label><select required style="width:auto;padding:8px 16px;border:1px solid var(--grey-200);border-radius:var(--radius-sm)"><option>5 Stars</option><option>4 Stars</option><option>3 Stars</option><option>2 Stars</option><option>1 Star</option></select></div>
+            <div class="form-group"><label>Your Review</label><textarea rows="3" required placeholder="Share your experience..." style="width:100%;padding:12px;border:1px solid var(--grey-200);border-radius:var(--radius-sm);resize:vertical"></textarea></div>
+            <button type="submit" class="btn btn-primary btn-sm">Submit Review</button>
+          </form>
+        </div>
+      `;
+
+      // Mock reviews
+      const reviewNames = ['Ankit M.', 'Rohit K.', 'Prashant S.', 'Deepak V.', 'Naveen R.'];
+      document.getElementById('reviewsList').innerHTML = reviewNames.slice(0, 3).map((name, i) =>
+        `<div style="padding:16px 0;border-bottom:1px solid var(--grey-100)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <strong style="font-size:.9rem">${name}</strong>
+            <span class="stars" style="color:var(--gold);font-size:.8rem">${'★'.repeat(5 - i) + '☆'.repeat(i)}</span>
+            <span style="font-size:.75rem;color:var(--grey-400)">Verified Purchase</span>
+          </div>
+          <p style="font-size:.85rem;color:var(--grey-600);line-height:1.6">${['Excellent quality and perfect fit. The fabric feels premium and the stitching is flawless. Highly recommend!', 'Great shirt, very comfortable for office wear. The color is exactly as shown.', 'Good value for money. The fit is nice but I wished the fabric was slightly thicker.'][i]}</p>
+        </div>`
+      ).join('');
+
+      // Related products
+      const related = PRODUCTS.filter(r => r.category === p.category && r.id !== p.id).slice(0, 4);
+      document.getElementById('relatedGrid').innerHTML = related.map(renderProductCard).join('');
+    }
+
+    let selectedSize, selectedColor;
+    function selectSize(btn) {
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedSize = btn.textContent;
+    }
+    function selectColor(btn) {
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedColor = btn.querySelector('.color-swatch').style.background;
+    }
+    function changeImage(src, btn) {
+      document.getElementById('mainImage').src = src;
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    function switchTab(btn, tabId) {
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      ['tabDesc', 'tabSpecs', 'tabCare', 'tabReturns'].forEach(id => document.getElementById(id).style.display = 'none');
+      document.getElementById(tabId).style.display = 'block';
+    }
+    function addToCartFromDetail() {
+      const size = document.querySelector('.size-options .active')?.textContent || product.sizes[0];
+      const color = document.querySelector('.color-options .active .color-swatch')?.style.background || product.colors[0];
+      Store.addToCart(product.id, size, color, 1);
+      showToast(`${product.name} added to cart`);
+    }
+    function buyNow() {
+      addToCartFromDetail();
+      window.location.href = 'checkout.html';
+    }
+    function checkDelivery() {
+      const pin = document.getElementById('pincodeInput').value;
+      if (pin.length !== 6) { showToast('Please enter a valid 6-digit pincode', 'error'); return; }
+      const days = 3 + Math.floor(Math.random() * 4);
+      const date = new Date(); date.setDate(date.getDate() + days);
+      document.getElementById('deliveryResult').innerHTML = `✓ Delivery by <strong>${date.toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' })}</strong> · Free shipping on orders above ₹1,999`;
+    }
+  </script>
+</body>
+
+</html>

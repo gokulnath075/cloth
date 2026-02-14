@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policies — PREMIUM.</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="navbar"></div>
+    <div class="static-page">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span
+                    class="current">Policies</span></div>
+            <div class="page-header">
+                <h1>Policies</h1>
+                <p>Shipping, returns, privacy, and terms of service</p>
+            </div>
+            <div class="content-block">
+                <div style="display:flex;gap:8px;margin-bottom:40px;flex-wrap:wrap">
+                    <button class="btn btn-sm btn-primary" onclick="showPolicy('shipping')">Shipping & Returns</button>
+                    <button class="btn btn-sm btn-secondary" onclick="showPolicy('privacy')">Privacy Policy</button>
+                    <button class="btn btn-sm btn-secondary" onclick="showPolicy('terms')">Terms of Service</button>
+                </div>
+
+                <div id="shippingPolicy">
+                    <h2>Shipping Policy</h2>
+                    <p><strong>Domestic Shipping:</strong> We deliver across India. Standard delivery takes 3-7 business
+                        days. Express delivery (1-2 business days) is available for select metros at ₹249.</p>
+                    <p><strong>Free Shipping:</strong> All orders above ₹1,999 qualify for free standard shipping.</p>
+                    <p><strong>Order Processing:</strong> Orders placed before 2 PM IST on business days are processed
+                        the same day. Weekend orders are processed on the next business day.</p>
+                    <h2>Return & Exchange Policy</h2>
+                    <p><strong>30-Day Returns:</strong> We accept returns within 30 days of delivery. Items must be
+                        unworn, unwashed, with original tags and packaging intact.</p>
+                    <p><strong>Free Exchange:</strong> Wrong size or color? We offer free exchanges on all orders.
+                        Simply initiate an exchange from your account.</p>
+                    <p><strong>Refund Process:</strong> Refunds are processed within 5-7 business days after we receive
+                        and inspect the returned item. Amount is credited to the original payment method.</p>
+                    <p><strong>Non-Returnable Items:</strong> Customized or altered items, items marked as final sale,
+                        and underwear/innerwear cannot be returned.</p>
+                </div>
+
+                <div id="privacyPolicy" style="display:none">
+                    <h2>Privacy Policy</h2>
+                    <p><strong>Information We Collect:</strong> We collect personal information (name, email, phone,
+                        address) when you create an account, place an order, or subscribe to our newsletter.</p>
+                    <p><strong>How We Use Your Data:</strong> Your information is used to process orders, improve our
+                        services, send promotional communications (with your consent), and provide customer support.</p>
+                    <p><strong>Data Protection:</strong> We employ industry-standard encryption (SSL/TLS) to protect
+                        your data. Payment information is processed securely through certified payment gateways — we
+                        never store card details.</p>
+                    <p><strong>Third Parties:</strong> We do not sell your personal data. We share necessary information
+                        only with shipping partners and payment processors to fulfill your orders.</p>
+                    <p><strong>Your Rights:</strong> You can access, modify, or delete your personal data at any time by
+                        contacting us at privacy@premium.in.</p>
+                    <p><strong>Cookies:</strong> We use cookies to enhance your browsing experience, remember
+                        preferences, and analyze site traffic. You can manage cookie preferences through your browser
+                        settings.</p>
+                </div>
+
+                <div id="termsPolicy" style="display:none">
+                    <h2>Terms of Service</h2>
+                    <p><strong>General:</strong> By accessing and using our website, you agree to these terms of
+                        service. PREMIUM. reserves the right to modify these terms at any time.</p>
+                    <p><strong>Account:</strong> You are responsible for maintaining the confidentiality of your account
+                        credentials. You must be 18 years or older to create an account and make purchases.</p>
+                    <p><strong>Pricing:</strong> All prices are in Indian Rupees (INR) and inclusive of applicable
+                        taxes. We reserve the right to modify prices without prior notice. Prices at the time of order
+                        placement apply.</p>
+                    <p><strong>Product Information:</strong> We strive to provide accurate product descriptions and
+                        images. However, minor variations in color or texture may occur due to manufacturing processes
+                        and display settings.</p>
+                    <p><strong>Intellectual Property:</strong> All content on this website — including designs, logos,
+                        text, images, and software — is the property of PREMIUM. and protected by copyright laws.</p>
+                    <p><strong>Limitation of Liability:</strong> PREMIUM. shall not be liable for any indirect,
+                        incidental, or consequential damages arising from the use of our website or products.</p>
+                    <p><strong>Governing Law:</strong> These terms are governed by the laws of India. Any disputes shall
+                        be subject to the jurisdiction of courts in Mumbai, Maharashtra.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer"></div>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('navbar').innerHTML = getNavbarHTML();
+        document.getElementById('footer').innerHTML = getFooterHTML();
+        initApp();
+        function showPolicy(id) {
+            ['shippingPolicy', 'privacyPolicy', 'termsPolicy'].forEach(p => document.getElementById(p).style.display = 'none');
+            document.getElementById(id + 'Policy').style.display = 'block';
+            document.querySelectorAll('.content-block .btn').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-secondary'); });
+            event.target.classList.remove('btn-secondary'); event.target.classList.add('btn-primary');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PREMIUM. — Redefining Men's Fashion</title>
+  <meta name="description"
+    content="Premium men's shirts and clothing. Shop checked, plain, striped, printed, formal, casual, slim fit, and oversized shirts.">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div id="navbar"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=1600&h=900&fit=crop"
+        alt="Premium Men's Fashion">
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <span class="badge badge-gold">New Collection 2026</span>
+        <h1>Redefining <span>Premium</span> Men's Fashion</h1>
+        <p>Discover shirts crafted from the world's finest fabrics. Where impeccable tailoring meets modern elegance for
+          the distinguished gentleman.</p>
+        <div class="hero-buttons">
+          <a href="category.html" class="btn btn-gold btn-lg">Shop Shirts</a>
+          <a href="category.html?sort=newest" class="btn btn-secondary btn-lg"
+            style="border-color:var(--white);color:var(--white)">New Arrivals</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED CATEGORIES -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="overline">Curated Collections</div>
+        <h2>Shop by Category</h2>
+        <p>Explore our meticulously crafted collections designed for every occasion and style preference.</p>
+      </div>
+      <div class="categories-grid" id="categoriesGrid"></div>
+    </div>
+  </section>
+
+  <!-- TRENDING -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <div class="overline">What's Hot</div>
+        <h2>Trending Now</h2>
+        <p>The most sought-after pieces from our latest collection.</p>
+      </div>
+      <div class="products-grid" id="trendingGrid"></div>
+    </div>
+  </section>
+
+  <!-- BEST SELLERS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="overline">Customer Favorites</div>
+        <h2>Best Sellers</h2>
+        <p>Loved by thousands. Our best-selling shirts that never go out of style.</p>
+      </div>
+      <div class="products-grid" id="bestsellerGrid"></div>
+    </div>
+  </section>
+
+  <!-- LIMITED EDITION -->
+  <section class="section limited-section">
+    <div class="container">
+      <div class="limited-grid">
+        <div class="limited-content">
+          <div class="overline">Exclusive Drop</div>
+          <h2>The Limited Edition Collection</h2>
+          <p>Rare fabrics. Numbered pieces. Once they're gone, they're gone. Each shirt in this collection is crafted
+            from hand-selected textiles with meticulous attention to every stitch and detail.</p>
+          <a href="category.html?badge=limited" class="btn btn-gold">Explore Collection</a>
+        </div>
+        <div class="limited-image">
+          <img src="https://images.unsplash.com/photo-1620012253295-c15cc3e65df4?w=600&h=750&fit=crop"
+            alt="Limited Edition">
+          <div class="price-tag">
+            <div class="pt-label">Starting from</div>
+            <div class="pt-price">₹2,899</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <div class="overline">Voices of Confidence</div>
+        <h2>What Our Customers Say</h2>
+        <p>Real stories from real gentlemen who trust our craft.</p>
+      </div>
+      <div class="testimonials-track" id="testimonialsTrack"></div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <div class="container">
+      <h2>Join the Elite Circle</h2>
+      <p>Subscribe for early access to new collections, exclusive offers, and style guides.</p>
+      <form class="newsletter-form"
+        onsubmit="event.preventDefault(); showToast('Welcome to the Elite Circle!'); this.reset();">
+        <input type="email" placeholder="Enter your email address" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('navbar').innerHTML = getNavbarHTML();
+    document.getElementById('footer').innerHTML = getFooterHTML();
+    initApp();
+
+    // Categories
+    document.getElementById('categoriesGrid').innerHTML = CATEGORIES.map(c =>
+      `<a href="category.html?cat=${c.id}" class="category-card">
+        <img src="${c.image}" alt="${c.name}" loading="lazy">
+        <div class="overlay">
+          <h3>${c.name}</h3>
+          <span>Shop Now →</span>
+        </div>
+      </a>`
+    ).join('');
+
+    // Trending (newest)
+    const trending = PRODUCTS.filter(p => p.badge === 'new' || p.rating >= 4.5).slice(0, 4);
+    document.getElementById('trendingGrid').innerHTML = trending.map(renderProductCard).join('');
+
+    // Best Sellers
+    const bestsellers = PRODUCTS.filter(p => p.badge === 'bestseller').slice(0, 4);
+    document.getElementById('bestsellerGrid').innerHTML = bestsellers.map(renderProductCard).join('');
+
+    // Testimonials
+    document.getElementById('testimonialsTrack').innerHTML = TESTIMONIALS.map(t =>
+      `<div class="testimonial-card">
+        <div class="tc-stars">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div>
+        <p>"${t.text}"</p>
+        <div class="tc-author">
+          <div class="avatar">${t.avatar}</div>
+          <div class="info"><h4>${t.name}</h4><span>${t.role}</span></div>
+        </div>
+      </div>`
+    ).join('');
+  </script>
+</body>
+
+</html>

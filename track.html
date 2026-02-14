@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order — PREMIUM.</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="navbar"></div>
+    <div class="track-page">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span class="current">Track
+                    Order</span></div>
+            <div class="track-form">
+                <h1>Track Your Order</h1>
+                <p>Enter your order ID to check the current status of your shipment.</p>
+                <div class="track-input">
+                    <input type="text" id="orderIdInput" placeholder="Enter Order ID (e.g., PMC...)" value="">
+                    <button class="btn btn-primary" onclick="trackOrder()">Track</button>
+                </div>
+            </div>
+            <div id="trackingResult"></div>
+        </div>
+    </div>
+    <div id="footer"></div>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('navbar').innerHTML = getNavbarHTML();
+        document.getElementById('footer').innerHTML = getFooterHTML();
+        initApp();
+
+        // Auto-fill from URL
+        const urlId = new URLSearchParams(window.location.search).get('id');
+        if (urlId) { document.getElementById('orderIdInput').value = urlId; setTimeout(trackOrder, 300); }
+
+        function trackOrder() {
+            const orderId = document.getElementById('orderIdInput').value.trim();
+            if (!orderId) { showToast('Please enter an order ID', 'error'); return; }
+
+            const orders = Store.getOrders();
+            const order = orders.find(o => o.id === orderId);
+
+            const steps = [
+                { icon: 'check_circle', title: 'Order Confirmed', desc: 'Your order has been placed successfully', time: 'Just now', completed: true },
+                { icon: 'inventory_2', title: 'Processing', desc: 'We are preparing your order for shipment', time: 'Within 24 hours', completed: true },
+                { icon: 'local_shipping', title: 'Shipped', desc: 'Your order is on its way', time: 'Expected in 2-3 days', completed: false, current: true },
+                { icon: 'home', title: 'Out for Delivery', desc: 'Your package is with the delivery partner', time: '', completed: false },
+                { icon: 'done_all', title: 'Delivered', desc: 'Package delivered successfully', time: '', completed: false }
+            ];
+
+            let orderInfo = '';
+            if (order) {
+                const itemCount = order.items.reduce((s, i) => s + i.qty, 0);
+                orderInfo = `<div style="background:var(--grey-50);padding:24px;border-radius:var(--radius-md);margin-bottom:40px;max-width:600px;margin-left:auto;margin-right:auto">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--grey-400)">Order ID</span><strong>${order.id}</strong></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--grey-400)">Items</span><span>${itemCount} item${itemCount > 1 ? 's' : ''}</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--grey-400)">Total</span><strong>${formatPrice(order.total)}</strong></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--grey-400)">Date</span><span>${new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
+        </div>`;
+            }
+
+            document.getElementById('trackingResult').innerHTML = `
+        ${orderInfo}
+        <div class="tracking-timeline">
+          ${steps.map(s => `
+            <div class="timeline-step ${s.completed ? 'completed' : ''} ${s.current ? 'current' : ''}">
+              <div class="step-dot"><span class="material-symbols-outlined" style="font-size:1.2rem">${s.icon}</span></div>
+              <div class="step-info">
+                <h4>${s.title}</h4>
+                <p>${s.desc}</p>
+                ${s.time ? `<p style="font-size:.75rem;margin-top:4px;color:var(--gold-dark)">${s.time}</p>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>`;
+        }
+    </script>
+</body>
+
+</html>

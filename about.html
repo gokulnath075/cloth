@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us — PREMIUM.</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="navbar"></div>
+    <div class="static-page">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span class="current">About
+                    Us</span></div>
+            <div class="page-header">
+                <h1>Our Story</h1>
+                <p>Crafting excellence in men's fashion since 2020</p>
+            </div>
+            <div class="content-block">
+                <div style="aspect-ratio:21/9;border-radius:var(--radius-md);overflow:hidden;margin-bottom:48px"><img
+                        src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1200&h=500&fit=crop"
+                        alt="Our Workshop" style="width:100%;height:100%;object-fit:cover"></div>
+                <h2>The PREMIUM. Promise</h2>
+                <p>Born from a desire to bridge the gap between luxury fashion and accessible pricing, PREMIUM. was
+                    founded by a team of passionate designers and textile experts. We believe every man deserves access
+                    to exceptional clothing that makes him look and feel his best.</p>
+                <p>Our journey began in a small studio in Mumbai, where we spent months perfecting our first shirt
+                    design. Today, we serve thousands of discerning gentlemen across India, each wearing a piece of our
+                    dedication to quality.</p>
+                <h2>Our Craft</h2>
+                <p>Every PREMIUM. shirt begins with the finest fabrics sourced from the world's most renowned mills —
+                    Egyptian cotton from the Nile Delta, Italian linens from Lombardy, and Japanese selvedge denims from
+                    Okayama. Our master tailors bring decades of experience to every stitch.</p>
+                <h2>Sustainability</h2>
+                <p>We're committed to responsible fashion. Our supply chain prioritizes ethical sourcing, fair wages,
+                    and minimal environmental impact. We use eco-friendly packaging and continuously invest in
+                    sustainable manufacturing processes.</p>
+                <div
+                    style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;text-align:center">
+                    <div style="padding:32px;background:var(--grey-50);border-radius:var(--radius-md)">
+                        <div
+                            style="font-size:2.5rem;font-weight:700;font-family:var(--font-display);color:var(--gold-dark)">
+                            50K+</div>
+                        <div style="font-size:.85rem;color:var(--grey-500);margin-top:8px">Happy Customers</div>
+                    </div>
+                    <div style="padding:32px;background:var(--grey-50);border-radius:var(--radius-md)">
+                        <div
+                            style="font-size:2.5rem;font-weight:700;font-family:var(--font-display);color:var(--gold-dark)">
+                            200+</div>
+                        <div style="font-size:.85rem;color:var(--grey-500);margin-top:8px">Unique Designs</div>
+                    </div>
+                    <div style="padding:32px;background:var(--grey-50);border-radius:var(--radius-md)">
+                        <div
+                            style="font-size:2.5rem;font-weight:700;font-family:var(--font-display);color:var(--gold-dark)">
+                            4.8★</div>
+                        <div style="font-size:.85rem;color:var(--grey-500);margin-top:8px">Average Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer"></div>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>document.getElementById('navbar').innerHTML = getNavbarHTML(); document.getElementById('footer').innerHTML = getFooterHTML(); initApp();</script>
+</body>
+
+</html>

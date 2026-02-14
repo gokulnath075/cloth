@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist — PREMIUM.</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="navbar"></div>
+    <div class="wishlist-page">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span
+                    class="current">Wishlist</span></div>
+            <h1 style="font-size:2rem;margin-bottom:32px">My Wishlist</h1>
+            <div id="wishlistContent"></div>
+        </div>
+    </div>
+    <div id="footer"></div>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('navbar').innerHTML = getNavbarHTML();
+        document.getElementById('footer').innerHTML = getFooterHTML();
+        initApp();
+        function renderWishlist() {
+            const wl = Store.getWishlist();
+            if (wl.length === 0) {
+                document.getElementById('wishlistContent').innerHTML = `<div class="empty-state"><span class="material-symbols-outlined" style="font-size:4rem;color:var(--grey-300);margin-bottom:16px">favorite_border</span><h2>Your wishlist is empty</h2><p>Save items you love to your wishlist.</p><a href="category.html" class="btn btn-primary">Explore Shirts</a></div>`;
+                return;
+            }
+            const products = wl.map(id => getProduct(id)).filter(Boolean);
+            document.getElementById('wishlistContent').innerHTML = `<div class="products-grid">${products.map(renderProductCard).join('')}</div>`;
+        }
+        renderWishlist();
+        window.addEventListener('wishlistUpdated', renderWishlist);
+    </script>
+</body>
+
+</html>

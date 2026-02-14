@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ — PREMIUM.</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="navbar"></div>
+    <div class="static-page">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span
+                    class="current">FAQ</span></div>
+            <div class="page-header">
+                <h1>Frequently Asked Questions</h1>
+                <p>Everything you need to know about shopping with us</p>
+            </div>
+            <div class="content-block" id="faqList"></div>
+        </div>
+    </div>
+    <div id="footer"></div>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('navbar').innerHTML = getNavbarHTML();
+        document.getElementById('footer').innerHTML = getFooterHTML();
+        initApp();
+        const faqs = [
+            { q: "How do I find the right size?", a: "We provide a detailed size guide on every product page. Measure your chest, shoulders, and sleeve length, then match with our chart. If you're between sizes, we recommend sizing up for a comfortable fit." },
+            { q: "What is the return policy?", a: "We offer a hassle-free 30-day return policy. Items must be unworn, unwashed, and in original packaging with tags attached. Initiate a return from your account or contact our support team." },
+            { q: "How long does delivery take?", a: "Standard delivery takes 3-7 business days depending on your location. We offer express delivery (1-2 business days) for select metro areas. You can check estimated delivery by entering your pincode on the product page." },
+            { q: "Are the colors accurate to the product photos?", a: "We make every effort to display colors as accurately as possible. However, due to monitor settings and lighting, slight variations may occur. Our product descriptions include detailed color notes." },
+            { q: "Do you offer gift wrapping?", a: "Yes! We offer premium gift wrapping for ₹149. Select the gift wrap option at checkout. Your order will arrive in our signature black box with a gold ribbon and a personalized note card." },
+            { q: "How do I care for my shirts?", a: "Care instructions are listed on every product page and on the garment's label. Generally, we recommend cold machine wash, hanging to dry, and medium-heat ironing for best results." },
+            { q: "Can I modify or cancel my order?", a: "Orders can be modified or cancelled within 2 hours of placement. After that, the order enters processing and changes may not be possible. Contact us immediately if you need assistance." },
+            { q: "Do you ship internationally?", a: "Currently, we ship across India. International shipping is coming soon. Sign up for our newsletter to be notified when we launch global delivery." },
+            { q: "What payment methods do you accept?", a: "We accept Credit/Debit cards (Visa, Mastercard, RuPay), UPI (Google Pay, PhonePe, Paytm), Net Banking, and Cash on Delivery for eligible pincodes." },
+            { q: "How can I track my order?", a: "Visit our Track Order page and enter your order ID. You'll receive tracking updates via email and SMS at every stage of delivery." }
+        ];
+        document.getElementById('faqList').innerHTML = faqs.map(f =>
+            `<div class="faq-item" onclick="this.classList.toggle('open')">
+        <h3>${f.q} <span class="material-symbols-outlined" style="font-size:1.2rem;transition:var(--transition)">expand_more</span></h3>
+        <div class="faq-answer"><p>${f.a}</p></div>
+      </div>`
+        ).join('');
+    </script>
+</body>
+
+</html>

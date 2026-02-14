@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Shirts — PREMIUM.</title>
+    <meta name="description"
+        content="Browse our premium collection of men's shirts. Filter by size, color, price, fit, fabric, and more.">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="navbar"></div>
+
+    <div class="category-banner">
+        <div class="container">
+            <div class="breadcrumb" style="justify-content:center;margin-bottom:12px">
+                <a href="index.html" style="color:var(--grey-400)">Home</a><span class="sep"
+                    style="color:var(--grey-600)">/</span><span style="color:var(--white)" class="current">Shirts</span>
+            </div>
+            <h1 id="pageTitle">All Shirts</h1>
+            <p id="pageDesc">Premium shirts for every occasion</p>
+        </div>
+    </div>
+
+    <div class="category-page">
+        <div class="container">
+            <div class="category-tabs" id="categoryTabs"></div>
+            <div class="applied-filters" id="appliedFilters"></div>
+            <div class="listing-layout">
+                <!-- FILTERS SIDEBAR -->
+                <aside class="filters-sidebar" id="filtersSidebar">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                        <h2 style="font-size:1.1rem">Filters</h2>
+                        <button onclick="resetFilters()"
+                            style="font-size:.8rem;color:var(--gold-dark);font-weight:600">Reset All</button>
+                    </div>
+                    <div class="filter-group">
+                        <h3>Size</h3>
+                        <div class="filter-options" id="sizeFilters"></div>
+                    </div>
+                    <div class="filter-group">
+                        <h3>Fit</h3>
+                        <div class="filter-options">
+                            <label><input type="checkbox" value="slim" onchange="applyFilters()"> Slim Fit</label>
+                            <label><input type="checkbox" value="regular" onchange="applyFilters()"> Regular Fit</label>
+                            <label><input type="checkbox" value="oversized" onchange="applyFilters()"> Oversized</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <h3>Fabric</h3>
+                        <div class="filter-options" id="fabricFilters"></div>
+                    </div>
+                    <div class="filter-group">
+                        <h3>Sleeve</h3>
+                        <div class="filter-options">
+                            <label><input type="checkbox" value="full" onchange="applyFilters()"> Full Sleeve</label>
+                            <label><input type="checkbox" value="half" onchange="applyFilters()"> Half Sleeve</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <h3>Occasion</h3>
+                        <div class="filter-options">
+                            <label><input type="checkbox" value="formal" onchange="applyFilters()"> Formal</label>
+                            <label><input type="checkbox" value="casual" onchange="applyFilters()"> Casual</label>
+                            <label><input type="checkbox" value="party" onchange="applyFilters()"> Party</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <h3>Price Range</h3>
+                        <div class="price-range-inputs">
+                            <input type="number" id="priceMin" placeholder="₹ Min" onchange="applyFilters()">
+                            <span>—</span>
+                            <input type="number" id="priceMax" placeholder="₹ Max" onchange="applyFilters()">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="width:100%;margin-top:16px;display:none"
+                        id="mobileFilterClose"
+                        onclick="document.getElementById('filtersSidebar').classList.remove('active')">Apply
+                        Filters</button>
+                </aside>
+
+                <!-- PRODUCTS -->
+                <div>
+                    <div class="listing-toolbar">
+                        <span class="result-count" id="resultCount">40 products</span>
+                        <div style="display:flex;gap:12px;align-items:center">
+                            <button class="btn btn-sm btn-secondary" style="display:none" id="filterToggle"
+                                onclick="document.getElementById('filtersSidebar').classList.add('active')">
+                                <span class="material-symbols-outlined" style="font-size:1rem">tune</span> Filters
+                            </button>
+                            <select id="sortSelect" onchange="applyFilters()">
+                                <option value="popular">Popularity</option>
+                                <option value="newest">Newest First</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                                <option value="rating">Highest Rated</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="products-grid" id="productsGrid"></div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('navbar').innerHTML = getNavbarHTML();
+        document.getElementById('footer').innerHTML = getFooterHTML();
+        initApp();
+
+        const ITEMS_PER_PAGE = 8;
+        let currentPage = 1;
+        let currentCategory = null;
+        let currentBadge = null;
+
+        // Parse URL params
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('cat')) { currentCategory = params.get('cat'); }
+        if (params.get('badge')) { currentBadge = params.get('badge'); }
+        if (params.get('sort')) { document.getElementById('sortSelect').value = params.get('sort'); }
+
+        // Update title
+        if (currentCategory) {
+            const cat = CATEGORIES.find(c => c.id === currentCategory);
+            if (cat) {
+                document.getElementById('pageTitle').textContent = cat.name;
+                document.getElementById('pageDesc').textContent = `Premium ${cat.name.toLowerCase()} for the modern gentleman`;
+                document.title = `${cat.name} — PREMIUM.`;
+            }
+        }
+        if (currentBadge === 'limited') {
+            document.getElementById('pageTitle').textContent = 'Limited Edition';
+            document.getElementById('pageDesc').textContent = 'Exclusive pieces. Once they\'re gone, they\'re gone.';
+        }
+
+        // Build category tabs
+        document.getElementById('categoryTabs').innerHTML =
+            `<a href="category.html" class="${!currentCategory ? 'active' : ''}">All</a>` +
+            CATEGORIES.map(c => `<a href="category.html?cat=${c.id}" class="${currentCategory === c.id ? 'active' : ''}">${c.name}</a>`).join('');
+
+        // Build size filters
+        const allSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+        document.getElementById('sizeFilters').innerHTML = allSizes.map(s =>
+            `<label><input type="checkbox" value="${s}" onchange="applyFilters()"> ${s}</label>`
+        ).join('');
+
+        // Build fabric filters
+        const allFabrics = [...new Set(PRODUCTS.map(p => p.fabric))].sort();
+        document.getElementById('fabricFilters').innerHTML = allFabrics.map(f =>
+            `<label><input type="checkbox" value="${f}" onchange="applyFilters()"> ${f}</label>`
+        ).join('');
+
+        // Responsive filter toggle
+        function checkMobile() {
+            const isMobile = window.innerWidth <= 768;
+            document.getElementById('filterToggle').style.display = isMobile ? 'inline-flex' : 'none';
+            document.getElementById('mobileFilterClose').style.display = isMobile ? 'block' : 'none';
+        }
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        function getFilterValues(container) {
+            return [...container.querySelectorAll('input:checked')].map(i => i.value);
+        }
+
+        function applyFilters() {
+            let filtered = [...PRODUCTS];
+
+            // Category
+            if (currentCategory) filtered = filtered.filter(p => p.category === currentCategory);
+            if (currentBadge) filtered = filtered.filter(p => p.badge === currentBadge);
+
+            // Size
+            const sizes = getFilterValues(document.getElementById('sizeFilters'));
+            if (sizes.length) filtered = filtered.filter(p => p.sizes.some(s => sizes.includes(s)));
+
+            // Fit
+            const fits = getFilterValues(document.querySelector('.filter-options:has([value="slim"])') || document.createElement('div'));
+            const fitCheckboxes = document.querySelectorAll('.filter-options input[value="slim"], .filter-options input[value="regular"], .filter-options input[value="oversized"]');
+            const selectedFits = [...fitCheckboxes].filter(i => i.checked).map(i => i.value);
+            if (selectedFits.length) filtered = filtered.filter(p => selectedFits.includes(p.fit));
+
+            // Fabric
+            const fabrics = getFilterValues(document.getElementById('fabricFilters'));
+            if (fabrics.length) filtered = filtered.filter(p => fabrics.includes(p.fabric));
+
+            // Sleeve
+            const sleeveCheckboxes = document.querySelectorAll('.filter-options input[value="full"], .filter-options input[value="half"]');
+            const selectedSleeves = [...sleeveCheckboxes].filter(i => i.checked).map(i => i.value);
+            if (selectedSleeves.length) filtered = filtered.filter(p => selectedSleeves.includes(p.sleeve));
+
+            // Occasion
+            const occasionCheckboxes = document.querySelectorAll('.filter-options input[value="formal"], .filter-options input[value="casual"], .filter-options input[value="party"]');
+            const selectedOccasions = [...occasionCheckboxes].filter(i => i.checked).map(i => i.value);
+            if (selectedOccasions.length) filtered = filtered.filter(p => selectedOccasions.includes(p.occasion));
+
+            // Price
+            const minP = parseInt(document.getElementById('priceMin').value) || 0;
+            const maxP = parseInt(document.getElementById('priceMax').value) || Infinity;
+            if (minP > 0 || maxP < Infinity) filtered = filtered.filter(p => p.price >= minP && p.price <= maxP);
+
+            // Sort
+            const sort = document.getElementById('sortSelect').value;
+            switch (sort) {
+                case 'price-asc': filtered.sort((a, b) => a.price - b.price); break;
+                case 'price-desc': filtered.sort((a, b) => b.price - a.price); break;
+                case 'rating': filtered.sort((a, b) => b.rating - a.rating); break;
+                case 'newest': filtered.sort((a, b) => b.id - a.id); break;
+                default: filtered.sort((a, b) => b.reviews - a.reviews);
+            }
+
+            // Applied filters chips
+            const chips = [];
+            if (sizes.length) chips.push(...sizes.map(s => ({ label: `Size: ${s}`, type: 'size', value: s })));
+            if (selectedFits.length) chips.push(...selectedFits.map(f => ({ label: `Fit: ${f}`, type: 'fit', value: f })));
+            if (selectedSleeves.length) chips.push(...selectedSleeves.map(s => ({ label: `Sleeve: ${s}`, type: 'sleeve', value: s })));
+            if (selectedOccasions.length) chips.push(...selectedOccasions.map(o => ({ label: `Occasion: ${o}`, type: 'occasion', value: o })));
+            if (minP > 0) chips.push({ label: `Min: ₹${minP}`, type: 'priceMin' });
+            if (maxP < Infinity && document.getElementById('priceMax').value) chips.push({ label: `Max: ₹${maxP}`, type: 'priceMax' });
+
+            document.getElementById('appliedFilters').innerHTML = chips.length
+                ? chips.map(c => `<span class="filter-chip">${c.label} <button onclick="removeFilter('${c.type}','${c.value}')">×</button></span>`).join('') + `<button class="filter-chip" style="background:var(--black);color:var(--white);cursor:pointer" onclick="resetFilters()">Clear All</button>`
+                : '';
+
+            // Pagination
+            const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+            if (currentPage > totalPages) currentPage = 1;
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+            document.getElementById('resultCount').textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
+            document.getElementById('productsGrid').innerHTML = pageItems.length
+                ? pageItems.map(renderProductCard).join('')
+                : '<div class="empty-state"><h2>No products found</h2><p>Try adjusting your filters</p></div>';
+
+            // Pagination buttons
+            if (totalPages > 1) {
+                let pagHTML = '';
+                if (currentPage > 1) pagHTML += `<button onclick="goToPage(${currentPage - 1})">‹</button>`;
+                for (let i = 1; i <= totalPages; i++) {
+                    pagHTML += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                }
+                if (currentPage < totalPages) pagHTML += `<button onclick="goToPage(${currentPage + 1})">›</button>`;
+                document.getElementById('pagination').innerHTML = pagHTML;
+            } else {
+                document.getElementById('pagination').innerHTML = '';
+            }
+        }
+
+        function goToPage(page) { currentPage = page; applyFilters(); window.scrollTo({ top: 200, behavior: 'smooth' }); }
+
+        function resetFilters() {
+            document.querySelectorAll('.filters-sidebar input[type="checkbox"]').forEach(i => i.checked = false);
+            document.getElementById('priceMin').value = '';
+            document.getElementById('priceMax').value = '';
+            document.getElementById('sortSelect').value = 'popular';
+            currentPage = 1;
+            applyFilters();
+        }
+
+        function removeFilter(type, value) {
+            if (type === 'priceMin') document.getElementById('priceMin').value = '';
+            else if (type === 'priceMax') document.getElementById('priceMax').value = '';
+            else {
+                document.querySelectorAll(`.filters-sidebar input[value="${value}"]`).forEach(i => { if (i.checked) i.checked = false; });
+            }
+            applyFilters();
+        }
+
+        applyFilters();
+    </script>
+</body>
+
+</html>
