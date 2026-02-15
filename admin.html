@@ -1234,10 +1234,6 @@
                 <div class="login-logo">PREMIUM<span>.</span></div>
                 <div class="login-subtitle">Admin Panel</div>
             </div>
-            <div class="auth-tabs">
-                <button class="active" onclick="switchAuthTab('login',this)">Sign In</button>
-                <button onclick="switchAuthTab('signup',this)">Sign Up</button>
-            </div>
             <div class="login-card-body">
                 <!-- LOGIN FORM -->
                 <form class="auth-form active" id="loginForm" onsubmit="handleAdminLogin(event)">
@@ -1255,41 +1251,6 @@
                             autocomplete="current-password" required>
                     </div>
                     <button type="submit" class="login-btn">Sign In</button>
-                </form>
-                <!-- SIGNUP FORM -->
-                <form class="auth-form" id="signupForm" onsubmit="handleAdminSignup(event)">
-                    <div class="login-msg" id="signupMsg"></div>
-                    <div class="login-field">
-                        <label>Full Name</label>
-                        <span class="material-symbols-outlined field-icon">badge</span>
-                        <input type="text" id="signupName" placeholder="Enter your full name" required>
-                    </div>
-                    <div class="login-field">
-                        <label>Email</label>
-                        <span class="material-symbols-outlined field-icon">mail</span>
-                        <input type="email" id="signupEmail" placeholder="Enter email address" required>
-                    </div>
-                    <div class="login-field">
-                        <label>Username</label>
-                        <span class="material-symbols-outlined field-icon">person</span>
-                        <input type="text" id="signupUser" placeholder="Choose a username" autocomplete="off" required
-                            minlength="3">
-                    </div>
-                    <div class="login-field">
-                        <label>Password</label>
-                        <span class="material-symbols-outlined field-icon">lock</span>
-                        <input type="password" id="signupPass" placeholder="Create a password"
-                            autocomplete="new-password" required minlength="6" oninput="updatePwStrength(this.value)">
-                        <div class="pw-strength">
-                            <div class="pw-bar" id="pwBar"></div>
-                        </div>
-                    </div>
-                    <div class="login-field">
-                        <label>Confirm Password</label>
-                        <span class="material-symbols-outlined field-icon">lock</span>
-                        <input type="password" id="signupConfirm" placeholder="Re-enter password" required>
-                    </div>
-                    <button type="submit" class="login-btn">Create Account</button>
                 </form>
             </div>
         </div>
@@ -1568,51 +1529,54 @@
                                 min="0"></div>
                     </div>
                     <div class="form-row-3">
-                        <div class="form-group"><label>Fit</label><select id="pf-fit">
-                                <option value="regular">Regular</option>
-                                <option value="slim">Slim</option>
-                                <option value="oversized">Oversized</option>
-                            </select></div>
-                        <div class="form-group"><label>Fabric</label><input type="text" id="pf-fabric"
-                                placeholder="e.g. Oxford Cotton"></div>
-                        <div class="form-group"><label>Sleeve</label><select id="pf-sleeve">
-                                <option value="full">Full Sleeve</option>
-                                <option value="half">Half Sleeve</option>
-                            </select></div>
-                    </div>
-                    <div class="form-row-3">
-                        <div class="form-group"><label>Occasion</label><select id="pf-occasion">
-                                <option value="casual">Casual</option>
-                                <option value="formal">Formal</option>
-                                <option value="party">Party</option>
-                            </select></div>
-                        <div class="form-group"><label>Rating</label><input type="number" id="pf-rating" min="1" max="5"
-                                step="0.1" value="4.5"></div>
-                        <div class="form-group"><label>Badge</label><select id="pf-badge">
-                                <option value="">None</option>
-                                <option value="bestseller">Best Seller</option>
-                                <option value="new">New</option>
-                                <option value="limited">Limited</option>
-                            </select></div>
-                    </div>
-                    <div class="form-group"><label>Sizes</label><input type="text" id="pf-sizes"
-                            placeholder="S, M, L, XL, XXL">
-                        <div class="hint">Comma-separated values</div>
-                    </div>
-                    <div class="form-group"><label>Colors (hex)</label><input type="text" id="pf-colors"
-                            placeholder="#000000, #ffffff, #c9a84c">
-                        <div class="hint">Comma-separated hex codes</div>
-                    </div>
-                    <div class="form-group"><label>Main Image URL *</label><input type="url" id="pf-image" required
-                            placeholder="https://images.unsplash.com/..."></div>
-                    <div class="form-group"><label>Additional Image URLs</label><input type="text" id="pf-images"
-                            placeholder="URL1, URL2">
-                        <div class="hint">Comma-separated image URLs</div>
-                    </div>
-                    <div class="form-group"><label>Description</label><textarea id="pf-description"
-                            placeholder="Product description..."></textarea></div>
-                    <div class="form-group"><label>Care Instructions</label><input type="text" id="pf-care"
-                            placeholder="Machine wash cold..."></div>
+                        <div class="form-group"><label>Delivery Price (₹)</label><input type="number"
+                                id="pf-deliveryPrice" min="0" placeholder="0 = Free"></div>
+                        <div class="form-row-3">
+                            <div class="form-group"><label>Fit</label><select id="pf-fit">
+                                    <option value="regular">Regular</option>
+                                    <option value="slim">Slim</option>
+                                    <option value="oversized">Oversized</option>
+                                </select></div>
+                            <div class="form-group"><label>Fabric</label><input type="text" id="pf-fabric"
+                                    placeholder="e.g. Oxford Cotton"></div>
+                            <div class="form-group"><label>Sleeve</label><select id="pf-sleeve">
+                                    <option value="full">Full Sleeve</option>
+                                    <option value="half">Half Sleeve</option>
+                                </select></div>
+                        </div>
+                        <div class="form-row-3">
+                            <div class="form-group"><label>Occasion</label><select id="pf-occasion">
+                                    <option value="casual">Casual</option>
+                                    <option value="formal">Formal</option>
+                                    <option value="party">Party</option>
+                                </select></div>
+                            <div class="form-group"><label>Rating</label><input type="number" id="pf-rating" min="1"
+                                    max="5" step="0.1" value="4.5"></div>
+                            <div class="form-group"><label>Badge</label><select id="pf-badge">
+                                    <option value="">None</option>
+                                    <option value="bestseller">Best Seller</option>
+                                    <option value="new">New</option>
+                                    <option value="limited">Limited</option>
+                                </select></div>
+                        </div>
+                        <div class="form-group"><label>Sizes</label><input type="text" id="pf-sizes"
+                                placeholder="S, M, L, XL, XXL">
+                            <div class="hint">Comma-separated values</div>
+                        </div>
+                        <div class="form-group"><label>Colors (hex)</label><input type="text" id="pf-colors"
+                                placeholder="#000000, #ffffff, #c9a84c">
+                            <div class="hint">Comma-separated hex codes</div>
+                        </div>
+                        <div class="form-group"><label>Main Image URL *</label><input type="url" id="pf-image" required
+                                placeholder="https://images.unsplash.com/..."></div>
+                        <div class="form-group"><label>Additional Image URLs</label><input type="text" id="pf-images"
+                                placeholder="URL1, URL2">
+                            <div class="hint">Comma-separated image URLs</div>
+                        </div>
+                        <div class="form-group"><label>Description</label><textarea id="pf-description"
+                                placeholder="Product description..."></textarea></div>
+                        <div class="form-group"><label>Care Instructions</label><input type="text" id="pf-care"
+                                placeholder="Machine wash cold..."></div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -1763,6 +1727,7 @@
                 document.getElementById('pf-price').value = product.price;
                 document.getElementById('pf-originalPrice').value = product.originalPrice;
                 document.getElementById('pf-stock').value = product.stock;
+                document.getElementById('pf-deliveryPrice').value = product.deliveryPrice || 0;
                 document.getElementById('pf-fit').value = product.fit || 'regular';
                 document.getElementById('pf-fabric').value = product.fabric || '';
                 document.getElementById('pf-sleeve').value = product.sleeve || 'full';
@@ -1812,6 +1777,7 @@
                 price: parseInt(document.getElementById('pf-price').value),
                 originalPrice: parseInt(document.getElementById('pf-originalPrice').value),
                 stock: parseInt(document.getElementById('pf-stock').value),
+                deliveryPrice: parseInt(document.getElementById('pf-deliveryPrice').value) || 0,
                 fit: document.getElementById('pf-fit').value,
                 fabric: document.getElementById('pf-fabric').value.trim(),
                 sleeve: document.getElementById('pf-sleeve').value,
@@ -2008,16 +1974,19 @@
             e.target.value = '';
         }
         // ===================== ADMIN ACCOUNTS DATABASE =====================
+        const ADMIN_DB_VERSION = 2;
         function getAdminDB() {
-            let db = JSON.parse(localStorage.getItem('pmcAdminDB') || 'null');
-            if (!db || !Array.isArray(db) || db.length === 0) {
-                db = [
+            let stored = JSON.parse(localStorage.getItem('pmcAdminDB') || 'null');
+            let ver = parseInt(localStorage.getItem('pmcAdminDBVer') || '0');
+            if (!stored || !Array.isArray(stored) || stored.length === 0 || ver < ADMIN_DB_VERSION) {
+                stored = [
                     { id: 1, name: 'Gokul', email: 'nathgokul325@gmail.com', password: '11Mct@17', role: 'Super Admin', createdAt: new Date().toISOString() },
                     { id: 2, name: 'Admin', email: 'admin@gmail.com', password: 'Admin@123', role: 'Admin', createdAt: new Date().toISOString() }
                 ];
-                localStorage.setItem('pmcAdminDB', JSON.stringify(db));
+                localStorage.setItem('pmcAdminDB', JSON.stringify(stored));
+                localStorage.setItem('pmcAdminDBVer', ADMIN_DB_VERSION);
             }
-            return db;
+            return stored;
         }
         function saveAdminDB(db) { localStorage.setItem('pmcAdminDB', JSON.stringify(db)); }
         function getSession() { return JSON.parse(localStorage.getItem('pmcAdminSession') || 'null'); }
