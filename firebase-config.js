@@ -134,3 +134,136 @@ const FirebaseDB = {
         });
     }
 };
+
+// ============================================================
+// FIREBASE AUTH — User Authentication & Profiles
+// ============================================================
+
+const auth = firebase.auth();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+const FirebaseAuth = {
+    // Sign up with email & password
+    async signUp(email, password, name, phone) {
+        try {
+            const cred = await auth.createUserWithEmailAndPassword(email, password);
+            // Update display name
+            await cred.user.updateProfile({ displayName: name });
+            // Save user profile to Realtime DB
+            await db.ref('users/' + cred.user.uid).set({
+                name,
+                email: email.toLowerCase(),
+                phone: phone || '',
+                createdAt: new Date().toISOString(),
+                provider: 'email'
+            });
+            return { ok: true, user: { uid: cred.user.uid, name, email, phone } };
+        } catch (err) {
+            let message = err.message;
+            if (err.code === 'auth/email-already-in-use') message = 'This email is already registered. Please login instead.';
+            if (err.code === 'auth/weak-password') message = 'Password should be at least 6 characters.';
+            if (err.code === 'auth/invalid-email') message = 'Please enter a valid email address.';
+            return { ok: false, error: message };
+        }
+    },
+
+    // Sign in with email & password
+    async signIn(email, password) {
+        try {
+            const cred = await auth.signInWithEmailAndPassword(email, password);
+            // Fetch profile from DB
+            const snap = await db.ref('users/' + cred.user.uid).once('value');
+            const profile = snap.val() || {};
+            return {
+                ok: true,
+                user: {
+                    uid: cred.user.uid,
+                    name: cred.user.displayName || profile.name || '',
+                    email: cred.user.email,
+                    phone: profile.phone || ''
+                }
+            };
+        } catch (err) {
+            let message = err.message;
+            if (err.code === 'auth/user-not-found') message = 'No account found with this email.';
+            if (err.code === 'auth/wrong-password') message = 'Incorrect password. Please try again.';
+            if (err.code === 'auth/invalid-credential') message = 'Invalid email or password.';
+            if (err.code === 'auth/too-many-requests') message = 'Too many failed attempts. Please try again later.';
+            return { ok: false, error: message };
+        }
+    },
+
+    // Sign in with Google (real OAuth popup)
+    async signInWithGoogle() {
+        try {
+            const result = await auth.signInWithPopup(googleProvider);
+            const user = result.user;
+            // Check if profile exists, if not create one
+            const snap = await db.ref('users/' + user.uid).once('value');
+            if (!snap.exists()) {
+                await db.ref('users/' + user.uid).set({
+                    name: user.displayName || '',
+                    email: user.email,
+                    phone: user.phoneNumber || '',
+                    createdAt: new Date().toISOString(),
+                    provider: 'google',
+                    photoURL: user.photoURL || ''
+                });
+            }
+            const profile = snap.val() || {};
+            return {
+                ok: true,
+                user: {
+                    uid: user.uid,
+                    name: user.displayName || profile.name || '',
+                    email: user.email,
+                    phone: profile.phone || ''
+                }
+            };
+        } catch (err) {
+            if (err.code === 'auth/popup-closed-by-user') return { ok: false, error: 'Sign-in cancelled.' };
+            if (err.code === 'auth/popup-blocked') return { ok: false, error: 'Pop-up blocked. Please allow pop-ups and try again.' };
+            return { ok: false, error: err.message };
+        }
+    },
+
+    // Sign out
+    async signOut() {
+        await auth.signOut();
+    },
+
+    // Get current user
+    getCurrentUser() {
+        return auth.currentUser;
+    },
+
+    // Auth state listener — fires on login/logout
+    onAuthChange(callback) {
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const snap = await db.ref('users/' + user.uid).once('value');
+                const profile = snap.val() || {};
+                callback({
+                    uid: user.uid,
+                    name: user.displayName || profile.name || '',
+                    email: user.email,
+                    phone: profile.phone || '',
+                    photoURL: user.photoURL || profile.photoURL || ''
+                });
+            } else {
+                callback(null);
+            }
+        });
+    },
+
+    // Update user profile in DB
+    async updateProfile(uid, updates) {
+        try {
+            await db.ref('users/' + uid).update(updates);
+            return { ok: true };
+        } catch (err) {
+            return { ok: false, error: err.message };
+        }
+    }
+};
+
