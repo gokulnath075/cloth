@@ -245,10 +245,11 @@ const Store = {
     const orders = this.getOrders();
     orders.unshift(order);
     localStorage.setItem('pmcOrders', JSON.stringify(orders));
-    // Also save to Firebase if user is logged in
+    // Always save to Firebase — use logged-in user email or order address email
     const user = this.getUser();
-    if (user && user.email && typeof FirebaseOrders !== 'undefined') {
-      FirebaseOrders.save(user.email, order);
+    const email = (user && user.email) || (order.address && order.address.email);
+    if (email && typeof FirebaseOrders !== 'undefined') {
+      FirebaseOrders.save(email, order);
     }
     return order;
   },

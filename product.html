@@ -208,7 +208,7 @@
       if (pin.length !== 6) { showToast('Please enter a valid 6-digit pincode', 'error'); return; }
       const days = 3 + Math.floor(Math.random() * 4);
       const date = new Date(); date.setDate(date.getDate() + days);
-      document.getElementById('deliveryResult').innerHTML = `✓ Delivery by <strong>${date.toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' })}</strong> · Free shipping on orders above ₹1,999`;
+      document.getElementById('deliveryResult').innerHTML = `✓ Delivery by <strong>${date.toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' })}</strong> · Free shipping on orders above ₹500`;
     }
   </script>
 </body>
