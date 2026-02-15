@@ -85,21 +85,34 @@ let PRODUCTS = JSON.parse(localStorage.getItem('pmcAdminProducts') || 'null') ||
 let CATEGORIES = JSON.parse(localStorage.getItem('pmcAdminCategories') || 'null') || [...DEFAULT_CATEGORIES];
 
 // ============================================================
-// ADMIN STORE
+// ADMIN STORE (saves to Firebase + localStorage)
 // ============================================================
 
 const AdminStore = {
   saveProducts() {
     localStorage.setItem('pmcAdminProducts', JSON.stringify(PRODUCTS));
+    // Save to Firebase if available
+    if (typeof FirebaseDB !== 'undefined') {
+      FirebaseDB.saveProducts();
+    }
   },
   saveCategories() {
     localStorage.setItem('pmcAdminCategories', JSON.stringify(CATEGORIES));
+    // Save to Firebase if available
+    if (typeof FirebaseDB !== 'undefined') {
+      FirebaseDB.saveCategories();
+    }
   },
   resetToDefaults() {
     PRODUCTS = [...DEFAULT_PRODUCTS];
     CATEGORIES = [...DEFAULT_CATEGORIES];
     localStorage.removeItem('pmcAdminProducts');
     localStorage.removeItem('pmcAdminCategories');
+    // Reset Firebase too
+    if (typeof FirebaseDB !== 'undefined') {
+      FirebaseDB.saveProducts();
+      FirebaseDB.saveCategories();
+    }
   },
   getNextProductId() {
     return PRODUCTS.length > 0 ? Math.max(...PRODUCTS.map(p => p.id)) + 1 : 1;
@@ -119,6 +132,20 @@ const AdminStore = {
     }
   }
 };
+
+// ============================================================
+// DATA READY PROMISE
+// ============================================================
+// Pages should use: DataReady.then(() => { /* render content */ });
+//
+let DataReady;
+if (typeof FirebaseDB !== 'undefined') {
+  FirebaseDB.init();
+  DataReady = FirebaseDB.ready;
+} else {
+  // No Firebase — data is already loaded from localStorage/defaults
+  DataReady = Promise.resolve();
+}
 
 // ============================================================
 // STATE MANAGEMENT (localStorage-based)

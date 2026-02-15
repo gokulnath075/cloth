@@ -110,6 +110,9 @@
 
     <div id="footer"></div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="data.js"></script>
     <script src="app.js"></script>
     <script>
@@ -128,36 +131,40 @@
         if (params.get('badge')) { currentBadge = params.get('badge'); }
         if (params.get('sort')) { document.getElementById('sortSelect').value = params.get('sort'); }
 
-        // Update title
-        if (currentCategory) {
-            const cat = CATEGORIES.find(c => c.id === currentCategory);
-            if (cat) {
-                document.getElementById('pageTitle').textContent = cat.name;
-                document.getElementById('pageDesc').textContent = `Premium ${cat.name.toLowerCase()} for the modern gentleman`;
-                document.title = `${cat.name} — PREMIUM.`;
+        DataReady.then(() => {
+            // Update title
+            if (currentCategory) {
+                const cat = CATEGORIES.find(c => c.id === currentCategory);
+                if (cat) {
+                    document.getElementById('pageTitle').textContent = cat.name;
+                    document.getElementById('pageDesc').textContent = `Premium ${cat.name.toLowerCase()} for the modern gentleman`;
+                    document.title = `${cat.name} — PREMIUM.`;
+                }
             }
-        }
-        if (currentBadge === 'limited') {
-            document.getElementById('pageTitle').textContent = 'Limited Edition';
-            document.getElementById('pageDesc').textContent = 'Exclusive pieces. Once they\'re gone, they\'re gone.';
-        }
+            if (currentBadge === 'limited') {
+                document.getElementById('pageTitle').textContent = 'Limited Edition';
+                document.getElementById('pageDesc').textContent = 'Exclusive pieces. Once they\'re gone, they\'re gone.';
+            }
 
-        // Build category tabs
-        document.getElementById('categoryTabs').innerHTML =
-            `<a href="category.html" class="${!currentCategory ? 'active' : ''}">All</a>` +
-            CATEGORIES.map(c => `<a href="category.html?cat=${c.id}" class="${currentCategory === c.id ? 'active' : ''}">${c.name}</a>`).join('');
+            // Build category tabs
+            document.getElementById('categoryTabs').innerHTML =
+                `<a href="category.html" class="${!currentCategory ? 'active' : ''}">All</a>` +
+                CATEGORIES.map(c => `<a href="category.html?cat=${c.id}" class="${currentCategory === c.id ? 'active' : ''}">${c.name}</a>`).join('');
 
-        // Build size filters
-        const allSizes = ['S', 'M', 'L', 'XL', 'XXL'];
-        document.getElementById('sizeFilters').innerHTML = allSizes.map(s =>
-            `<label><input type="checkbox" value="${s}" onchange="applyFilters()"> ${s}</label>`
-        ).join('');
+            // Build size filters
+            const allSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+            document.getElementById('sizeFilters').innerHTML = allSizes.map(s =>
+                `<label><input type="checkbox" value="${s}" onchange="applyFilters()"> ${s}</label>`
+            ).join('');
 
-        // Build fabric filters
-        const allFabrics = [...new Set(PRODUCTS.map(p => p.fabric))].sort();
-        document.getElementById('fabricFilters').innerHTML = allFabrics.map(f =>
-            `<label><input type="checkbox" value="${f}" onchange="applyFilters()"> ${f}</label>`
-        ).join('');
+            // Build fabric filters
+            const allFabrics = [...new Set(PRODUCTS.map(p => p.fabric))].sort();
+            document.getElementById('fabricFilters').innerHTML = allFabrics.map(f =>
+                `<label><input type="checkbox" value="${f}" onchange="applyFilters()"> ${f}</label>`
+            ).join('');
+
+            applyFilters();
+        });
 
         // Responsive filter toggle
         function checkMobile() {
@@ -275,8 +282,6 @@
             }
             applyFilters();
         }
-
-        applyFilters();
     </script>
 </body>
 

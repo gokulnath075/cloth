@@ -122,6 +122,9 @@
 
   <div id="footer"></div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script>
@@ -129,36 +132,38 @@
     document.getElementById('footer').innerHTML = getFooterHTML();
     initApp();
 
-    // Categories
-    document.getElementById('categoriesGrid').innerHTML = CATEGORIES.map(c =>
-      `<a href="category.html?cat=${c.id}" class="category-card">
-        <img src="${c.image}" alt="${c.name}" loading="lazy">
-        <div class="overlay">
-          <h3>${c.name}</h3>
-          <span>Shop Now →</span>
-        </div>
-      </a>`
-    ).join('');
+    DataReady.then(() => {
+      // Categories
+      document.getElementById('categoriesGrid').innerHTML = CATEGORIES.map(c =>
+        `<a href="category.html?cat=${c.id}" class="category-card">
+          <img src="${c.image}" alt="${c.name}" loading="lazy">
+          <div class="overlay">
+            <h3>${c.name}</h3>
+            <span>Shop Now →</span>
+          </div>
+        </a>`
+      ).join('');
 
-    // Trending (newest)
-    const trending = PRODUCTS.filter(p => p.badge === 'new' || p.rating >= 4.5).slice(0, 4);
-    document.getElementById('trendingGrid').innerHTML = trending.map(renderProductCard).join('');
+      // Trending (newest)
+      const trending = PRODUCTS.filter(p => p.badge === 'new' || p.rating >= 4.5).slice(0, 4);
+      document.getElementById('trendingGrid').innerHTML = trending.map(renderProductCard).join('');
 
-    // Best Sellers
-    const bestsellers = PRODUCTS.filter(p => p.badge === 'bestseller').slice(0, 4);
-    document.getElementById('bestsellerGrid').innerHTML = bestsellers.map(renderProductCard).join('');
+      // Best Sellers
+      const bestsellers = PRODUCTS.filter(p => p.badge === 'bestseller').slice(0, 4);
+      document.getElementById('bestsellerGrid').innerHTML = bestsellers.map(renderProductCard).join('');
 
-    // Testimonials
-    document.getElementById('testimonialsTrack').innerHTML = TESTIMONIALS.map(t =>
-      `<div class="testimonial-card">
-        <div class="tc-stars">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div>
-        <p>"${t.text}"</p>
-        <div class="tc-author">
-          <div class="avatar">${t.avatar}</div>
-          <div class="info"><h4>${t.name}</h4><span>${t.role}</span></div>
-        </div>
-      </div>`
-    ).join('');
+      // Testimonials
+      document.getElementById('testimonialsTrack').innerHTML = TESTIMONIALS.map(t =>
+        `<div class="testimonial-card">
+          <div class="tc-stars">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div>
+          <p>"${t.text}"</p>
+          <div class="tc-author">
+            <div class="avatar">${t.avatar}</div>
+            <div class="info"><h4>${t.name}</h4><span>${t.role}</span></div>
+          </div>
+        </div>`
+      ).join('');
+    });
   </script>
 </body>
 

@@ -1088,6 +1088,8 @@
                 <a
                     onclick="if(confirm('Reset ALL data to defaults? This removes all admin changes.')){AdminStore.resetToDefaults();location.reload()}"><span
                         class="material-symbols-outlined">restart_alt</span> Reset to Defaults</a>
+                <a onclick="seedToFirebase()"><span class="material-symbols-outlined">cloud_upload</span> Seed to
+                    Firebase</a>
                 <div class="nav-divider"></div>
                 <a onclick="adminLogout()" class="logout-link"><span class="material-symbols-outlined">logout</span>
                     Logout</a>
@@ -1347,6 +1349,9 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="data.js"></script>
     <script>
         // ===================== NAVIGATION =====================
@@ -1805,10 +1810,26 @@
             location.reload();
         }
 
-        // ===================== INIT =====================
-        if (isAdminLoggedIn()) {
-            unlockAdmin();
+        // ===================== SEED TO FIREBASE =====================
+        function seedToFirebase() {
+            if (typeof FirebaseDB === 'undefined') {
+                adminToast('Firebase is not configured. Please update firebase-config.js', 'error');
+                return;
+            }
+            if (!confirm('Upload all current products & categories to Firebase? This will overwrite any existing Firebase data.')) return;
+            FirebaseDB.saveProducts().then(() => FirebaseDB.saveCategories()).then(() => {
+                adminToast('Data uploaded to Firebase successfully!');
+            }).catch(err => {
+                adminToast('Failed to upload: ' + err.message, 'error');
+            });
         }
+
+        // ===================== INIT =====================
+        DataReady.then(() => {
+            if (isAdminLoggedIn()) {
+                unlockAdmin();
+            }
+        });
     </script>
 </body>
 
