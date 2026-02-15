@@ -101,14 +101,19 @@
             color: #2e7d32;
         }
 
-        .status-processing {
+        .status-packed {
             background: #fff3e0;
             color: #ef6c00;
         }
 
-        .status-shipped {
+        .status-transit {
             background: #e3f2fd;
             color: #1565c0;
+        }
+
+        .status-out_for_delivery {
+            background: #fce4ec;
+            color: #c62828;
         }
 
         .status-delivered {
@@ -326,11 +331,23 @@
         function getStatusIcon(status) {
             const icons = {
                 confirmed: 'check_circle',
-                processing: 'inventory_2',
-                shipped: 'local_shipping',
+                packed: 'inventory_2',
+                transit: 'local_shipping',
+                out_for_delivery: 'two_wheeler',
                 delivered: 'done_all'
             };
             return icons[status] || 'pending';
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                confirmed: 'Confirmed',
+                packed: 'Packed',
+                transit: 'In Transit',
+                out_for_delivery: 'Out for Delivery',
+                delivered: 'Delivered'
+            };
+            return labels[status] || status;
         }
 
         function getPaymentLabel(method) {
@@ -393,7 +410,7 @@
                         </div>
                         <span class="status-badge status-${status}">
                             <span class="material-symbols-outlined" style="font-size:.9rem">${getStatusIcon(status)}</span>
-                            ${status}
+                            ${getStatusLabel(status)}
                         </span>
                     </div>
                     <div class="order-items">

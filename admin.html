@@ -1036,19 +1036,34 @@
             color: #2e7d32
         }
 
-        .order-status-badge.processing {
+        .order-status-badge.packed {
             background: #fff3e0;
             color: #ef6c00
         }
 
-        .order-status-badge.shipped {
+        .order-status-badge.transit {
             background: #e3f2fd;
             color: #1565c0
+        }
+
+        .order-status-badge.out_for_delivery {
+            background: #fce4ec;
+            color: #c62828
         }
 
         .order-status-badge.delivered {
             background: #f3e5f5;
             color: #7b1fa2
+        }
+
+        .status-select {
+            padding: 5px 8px;
+            border: 1px solid var(--grey-200);
+            border-radius: var(--radius-sm);
+            font-size: .75rem;
+            font-weight: 600;
+            background: var(--grey-50);
+            cursor: pointer
         }
 
         .filter-bar {
@@ -1470,8 +1485,9 @@
                             <select id="orderStatusFilter" onchange="renderAdminOrders()">
                                 <option value="">All Status</option>
                                 <option value="confirmed">Confirmed</option>
-                                <option value="processing">Processing</option>
-                                <option value="shipped">Shipped</option>
+                                <option value="packed">Packed</option>
+                                <option value="transit">Transit</option>
+                                <option value="out_for_delivery">Out for Delivery</option>
                                 <option value="delivered">Delivered</option>
                             </select>
                             <div class="search-box"><span class="material-symbols-outlined">search</span><input
@@ -2209,22 +2225,62 @@
             }
             const payIcons = { cod: 'local_shipping', card: 'credit_card', upi: 'account_balance' };
             const payLabels = { cod: 'COD', card: 'Card', upi: 'UPI' };
+            const statusLabels = { confirmed: 'Confirmed', packed: 'Packed', transit: 'Transit', out_for_delivery: 'Out for Delivery', delivered: 'Delivered' };
             tbody.innerHTML = filtered.map(o => {
                 const date = o.date ? new Date(o.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014';
                 const customer = o.address ? ((o.address.firstName || '') + ' ' + (o.address.lastName || '')).trim() : '\u2014';
                 const itemCount = (o.items || []).length;
                 const status = o.status || 'confirmed';
+                const statusOptions = ['confirmed', 'packed', 'transit', 'out_for_delivery', 'delivered'].map(s => `<option value="${s}" ${s === status ? 'selected' : ''}>${statusLabels[s]}</option>`).join('');
                 return `<tr>
                     <td style="font-weight:600;font-size:.82rem">${o.id || '\u2014'}</td>
                     <td><div style="font-size:.85rem;font-weight:500">${customer || '\u2014'}</div><div style="font-size:.72rem;color:var(--grey-400)">${o.address?.email || ''}</div></td>
                     <td style="font-size:.85rem">${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
                     <td style="font-weight:700">\u20b9${(o.total || 0).toLocaleString('en-IN')}</td>
                     <td><span style="font-size:.78rem;display:inline-flex;align-items:center;gap:4px"><span class="material-symbols-outlined" style="font-size:.9rem">${payIcons[o.payment] || 'payments'}</span>${payLabels[o.payment] || o.payment || '\u2014'}</span></td>
-                    <td><span class="order-status-badge ${status}">${status}</span></td>
+                    <td><select class="status-select" onchange="updateOrderStatus('${o.id}',this.value)">${statusOptions}</select></td>
                     <td style="font-size:.82rem;color:var(--grey-400)">${date}</td>
-                    <td><div class="action-btns"><button class="edit-btn" onclick="openInvoice('${o.id}')" title="Generate Invoice"><span class="material-symbols-outlined">receipt_long</span></button></div></td>
+                    <td><div class="action-btns"><button class="edit-btn" onclick="openInvoice('${o.id}')" title="Invoice"><span class="material-symbols-outlined">receipt_long</span></button><button class="del-btn" onclick="deleteOrder('${o.id}')" title="Remove"><span class="material-symbols-outlined">delete</span></button></div></td>
                 </tr>`;
             }).join('');
+        }
+
+        // ===================== ORDER ACTIONS =====================
+        async function updateOrderStatus(orderId, newStatus) {
+            const order = _allAdminOrders.find(o => o.id === orderId);
+            if (!order) return;
+            order.status = newStatus;
+            // Update in Firebase using emailToKey for correct path
+            try {
+                const email = (order.address && order.address.email) || '';
+                if (email && typeof emailToKey === 'function') {
+                    const key = emailToKey(email);
+                    await db.ref('orders/' + key + '/' + orderId + '/status').set(newStatus);
+                }
+                adminToast('Status updated to ' + newStatus.replace(/_/g, ' '));
+            } catch (err) {
+                adminToast('Failed to update status', 'error');
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm('Remove this order permanently?')) return;
+            const order = _allAdminOrders.find(o => o.id === orderId);
+            if (!order) return;
+            // Remove from Firebase using emailToKey for correct path
+            try {
+                const email = (order.address && order.address.email) || '';
+                if (email && typeof emailToKey === 'function') {
+                    const key = emailToKey(email);
+                    await db.ref('orders/' + key + '/' + orderId).remove();
+                }
+            } catch (err) {
+                adminToast('Firebase delete failed', 'error');
+            }
+            // Remove from local array and re-render
+            _allAdminOrders = _allAdminOrders.filter(o => o.id !== orderId);
+            renderAdminOrders();
+            adminToast('Order removed');
         }
 
         // ===================== INVOICE =====================

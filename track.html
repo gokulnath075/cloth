@@ -43,46 +43,74 @@
         const urlId = new URLSearchParams(window.location.search).get('id');
         if (urlId) { document.getElementById('orderIdInput').value = urlId; setTimeout(trackOrder, 300); }
 
-        function trackOrder() {
+        async function trackOrder() {
             const orderId = document.getElementById('orderIdInput').value.trim();
             if (!orderId) { showToast('Please enter an order ID', 'error'); return; }
 
-            const orders = Store.getOrders();
-            const order = orders.find(o => o.id === orderId);
+            // Try localStorage first, then Firebase
+            let order = Store.getOrders().find(o => o.id === orderId);
+
+            // If not found locally, search Firebase
+            if (!order) {
+                try {
+                    const snap = await db.ref('orders').once('value');
+                    if (snap.exists()) {
+                        const data = snap.val();
+                        Object.values(data).forEach(userOrders => {
+                            if (typeof userOrders === 'object' && userOrders !== null) {
+                                Object.values(userOrders).forEach(o => {
+                                    if (o.id === orderId) order = o;
+                                });
+                            }
+                        });
+                    }
+                } catch (err) { console.warn('Firebase lookup failed:', err); }
+            }
+
+            const statusOrder = ['confirmed', 'packed', 'transit', 'out_for_delivery', 'delivered'];
+            const currentStatus = order ? (order.status || 'confirmed') : 'confirmed';
+            const currentIdx = statusOrder.indexOf(currentStatus);
 
             const steps = [
-                { icon: 'check_circle', title: 'Order Confirmed', desc: 'Your order has been placed successfully', time: 'Just now', completed: true },
-                { icon: 'inventory_2', title: 'Processing', desc: 'We are preparing your order for shipment', time: 'Within 24 hours', completed: true },
-                { icon: 'local_shipping', title: 'Shipped', desc: 'Your order is on its way', time: 'Expected in 2-3 days', completed: false, current: true },
-                { icon: 'home', title: 'Out for Delivery', desc: 'Your package is with the delivery partner', time: '', completed: false },
-                { icon: 'done_all', title: 'Delivered', desc: 'Package delivered successfully', time: '', completed: false }
-            ];
+                { icon: 'check_circle', title: 'Confirmed', desc: 'Your order has been placed successfully' },
+                { icon: 'inventory_2', title: 'Packed', desc: 'Your order is packed and ready to ship' },
+                { icon: 'local_shipping', title: 'In Transit', desc: 'Your order is on its way' },
+                { icon: 'two_wheeler', title: 'Out for Delivery', desc: 'Your package is with the delivery partner' },
+                { icon: 'done_all', title: 'Delivered', desc: 'Package delivered successfully' }
+            ].map((s, i) => ({
+                ...s,
+                completed: i <= currentIdx,
+                current: i === currentIdx
+            }));
 
             let orderInfo = '';
             if (order) {
-                const itemCount = order.items.reduce((s, i) => s + i.qty, 0);
+                const itemCount = (order.items || []).reduce((s, i) => s + i.qty, 0);
                 orderInfo = `<div style="background:var(--grey-50);padding:24px;border-radius:var(--radius-md);margin-bottom:40px;max-width:600px;margin-left:auto;margin-right:auto">
           <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--grey-400)">Order ID</span><strong>${order.id}</strong></div>
           <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--grey-400)">Items</span><span>${itemCount} item${itemCount > 1 ? 's' : ''}</span></div>
           <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--grey-400)">Total</span><strong>${formatPrice(order.total)}</strong></div>
           <div style="display:flex;justify-content:space-between"><span style="color:var(--grey-400)">Date</span><span>${new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
         </div>`;
+            } else {
+                orderInfo = `<div style="background:#fff3e0;padding:16px 24px;border-radius:var(--radius-md);margin-bottom:40px;max-width:600px;margin-left:auto;margin-right:auto;color:#ef6c00;font-size:.9rem">
+          <strong>Order not found.</strong> Please check the order ID and try again.
+        </div>`;
             }
 
             document.getElementById('trackingResult').innerHTML = `
         ${orderInfo}
-        <div class="tracking-timeline">
+        ${order ? `<div class="tracking-timeline">
           ${steps.map(s => `
             <div class="timeline-step ${s.completed ? 'completed' : ''} ${s.current ? 'current' : ''}">
               <div class="step-dot"><span class="material-symbols-outlined" style="font-size:1.2rem">${s.icon}</span></div>
               <div class="step-info">
                 <h4>${s.title}</h4>
                 <p>${s.desc}</p>
-                ${s.time ? `<p style="font-size:.75rem;margin-top:4px;color:var(--gold-dark)">${s.time}</p>` : ''}
               </div>
             </div>
           `).join('')}
-        </div>`;
+        </div>` : ''}`;
         }
     </script>
 </body>
