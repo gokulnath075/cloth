@@ -19,30 +19,17 @@
 //   (or add authentication for better security)
 // ============================================================
 
-// 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-    import {initializeApp} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import {getAnalytics} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    const firebaseConfig = {
-        apiKey: "FQy4HArVdBbZ87AHrbfdhSXRgyE5NUbrh6GaL8enMUeh",
+// Your Firebase configuration (cloth-80369 project)
+const firebaseConfig = {
+    apiKey: "FQy4HArVdBbZ87AHrbfdhSXRgyE5NUbrh6GaL8enMUeh",
     authDomain: "cloth-80369.firebaseapp.com",
+    databaseURL: "https://cloth-80369-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "cloth-80369",
     storageBucket: "cloth-80369.firebasestorage.app",
     messagingSenderId: "310034596189",
     appId: "1:310034596189:web:20fc9c619939c27380a8b4",
     measurementId: "G-S61GJP3KV3"
-  };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-</script>
+};
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
