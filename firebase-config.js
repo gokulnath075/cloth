@@ -213,5 +213,53 @@ const FirebaseAuth = {
         } catch (err) {
             return { ok: false, error: err.message };
         }
+    },
+
+    // Reset password (verify email exists, then update password)
+    async resetPassword(email, newPassword) {
+        try {
+            const key = emailToKey(email);
+            const snap = await db.ref('users/' + key).once('value');
+            if (!snap.exists()) return { ok: false, error: 'No account found with this email address.' };
+            const hashedPw = await hashPassword(newPassword);
+            await db.ref('users/' + key).update({ password: hashedPw });
+            return { ok: true };
+        } catch (err) {
+            return { ok: false, error: err.message || 'Password reset failed. Please try again.' };
+        }
+    }
+};
+
+// ============================================================
+// FIREBASE ORDERS — Order Persistence in Realtime Database
+// ============================================================
+// Stores orders under /orders/{emailKey}/{orderId}
+
+const FirebaseOrders = {
+    // Save an order for a user
+    async save(userEmail, order) {
+        if (!userEmail) return;
+        try {
+            const key = emailToKey(userEmail);
+            await db.ref('orders/' + key + '/' + order.id).set(order);
+        } catch (err) {
+            console.warn('Firebase order save failed:', err);
+        }
+    },
+
+    // Get all orders for a user
+    async getAll(userEmail) {
+        if (!userEmail) return [];
+        try {
+            const key = emailToKey(userEmail);
+            const snap = await db.ref('orders/' + key).orderByChild('date').once('value');
+            if (!snap.exists()) return [];
+            const orders = [];
+            snap.forEach(child => { orders.push(child.val()); });
+            return orders.reverse(); // newest first
+        } catch (err) {
+            console.warn('Firebase orders read failed:', err);
+            return [];
+        }
     }
 };

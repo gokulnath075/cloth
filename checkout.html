@@ -23,21 +23,21 @@
                         <h2>Shipping Address</h2>
                         <form id="checkoutForm" onsubmit="placeOrder(event)">
                             <div class="form-row">
-                                <div class="form-group"><label>First Name</label><input type="text" required
-                                        placeholder="John"></div>
-                                <div class="form-group"><label>Last Name</label><input type="text" required
-                                        placeholder="Doe"></div>
+                                <div class="form-group"><label>First Name</label><input type="text" id="shipFirstName"
+                                        required placeholder="John"></div>
+                                <div class="form-group"><label>Last Name</label><input type="text" id="shipLastName"
+                                        required placeholder="Doe"></div>
                             </div>
-                            <div class="form-group"><label>Email</label><input type="email" required
+                            <div class="form-group"><label>Email</label><input type="email" id="shipEmail" required
                                     placeholder="john@example.com"></div>
-                            <div class="form-group"><label>Phone</label><input type="tel" required
+                            <div class="form-group"><label>Phone</label><input type="tel" id="shipPhone" required
                                     placeholder="+91 9876543210"></div>
-                            <div class="form-group"><label>Address</label><input type="text" required
+                            <div class="form-group"><label>Address</label><input type="text" id="shipAddress" required
                                     placeholder="Street address, apartment, floor"></div>
                             <div class="form-row">
-                                <div class="form-group"><label>City</label><input type="text" required
+                                <div class="form-group"><label>City</label><input type="text" id="shipCity" required
                                         placeholder="Mumbai"></div>
-                                <div class="form-group"><label>State</label><select required>
+                                <div class="form-group"><label>State</label><select id="shipState" required>
                                         <option value="">Select State</option>
                                         <option>Maharashtra</option>
                                         <option>Delhi</option>
@@ -50,8 +50,8 @@
                                     </select></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label>Pincode</label><input type="text" required maxlength="6"
-                                        placeholder="400001"></div>
+                                <div class="form-group"><label>Pincode</label><input type="text" id="shipPincode"
+                                        required maxlength="6" placeholder="400001"></div>
                                 <div class="form-group"><label>Country</label><input type="text" value="India" readonly>
                                 </div>
                             </div>
@@ -121,10 +121,29 @@
         function placeOrder(e) {
             e.preventDefault();
             const orderId = generateOrderId();
+            const cart = Store.getCart();
+            const subtotal = Store.getCartTotal();
+            const shipping = subtotal >= 1999 ? 0 : 149;
+            const payment = document.querySelector('input[name="payment"]:checked').value;
+
             const order = {
                 id: orderId,
-                items: Store.getCart().map(item => ({ ...item, product: getProduct(item.productId) })),
-                total: Store.getCartTotal(),
+                items: cart.map(item => ({ ...item, product: getProduct(item.productId) })),
+                subtotal: subtotal,
+                shipping: shipping,
+                total: subtotal + shipping,
+                payment: payment,
+                address: {
+                    firstName: document.getElementById('shipFirstName').value,
+                    lastName: document.getElementById('shipLastName').value,
+                    email: document.getElementById('shipEmail').value,
+                    phone: document.getElementById('shipPhone').value,
+                    street: document.getElementById('shipAddress').value,
+                    city: document.getElementById('shipCity').value,
+                    state: document.getElementById('shipState').value,
+                    pincode: document.getElementById('shipPincode').value,
+                    country: 'India'
+                },
                 date: new Date().toISOString(),
                 status: 'confirmed'
             };
@@ -137,7 +156,7 @@
           <p style="margin-bottom:8px">Your order ID is <strong>${orderId}</strong></p>
           <p style="color:var(--grey-400);margin-bottom:32px">We'll send you a confirmation email shortly.</p>
           <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-            <a href="track.html?id=${orderId}" class="btn btn-primary">Track Order</a>
+            <a href="orders.html" class="btn btn-primary">View My Orders</a>
             <a href="category.html" class="btn btn-secondary">Continue Shopping</a>
           </div>
         </div>`;

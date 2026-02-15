@@ -997,6 +997,232 @@
                 grid-template-columns: 1fr
             }
         }
+
+        /* ===== USERS & ORDERS ===== */
+        .admin-table .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .admin-table .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            font-weight: 700;
+            flex-shrink: 0
+        }
+
+        .order-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: .7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px
+        }
+
+        .order-status-badge.confirmed {
+            background: #e8f5e9;
+            color: #2e7d32
+        }
+
+        .order-status-badge.processing {
+            background: #fff3e0;
+            color: #ef6c00
+        }
+
+        .order-status-badge.shipped {
+            background: #e3f2fd;
+            color: #1565c0
+        }
+
+        .order-status-badge.delivered {
+            background: #f3e5f5;
+            color: #7b1fa2
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+
+        .filter-bar select {
+            padding: 8px 12px;
+            border: 1px solid var(--grey-200);
+            border-radius: var(--radius-sm);
+            font-size: .82rem;
+            background: var(--grey-50)
+        }
+
+        /* ===== INVOICE ===== */
+        .invoice-content {
+            font-family: var(--font-body);
+            color: var(--black)
+        }
+
+        .invoice-content .inv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--black)
+        }
+
+        .invoice-content .inv-logo {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 3px
+        }
+
+        .invoice-content .inv-logo span {
+            color: var(--gold)
+        }
+
+        .invoice-content .inv-meta {
+            text-align: right;
+            font-size: .82rem
+        }
+
+        .invoice-content .inv-meta h2 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: var(--grey-600)
+        }
+
+        .invoice-content .inv-parties {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px
+        }
+
+        .invoice-content .inv-party h3 {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--grey-400);
+            margin-bottom: 8px
+        }
+
+        .invoice-content .inv-party p {
+            font-size: .85rem;
+            line-height: 1.6;
+            margin: 0
+        }
+
+        .invoice-content .inv-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px
+        }
+
+        .invoice-content .inv-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--grey-400);
+            font-weight: 600;
+            background: var(--grey-50);
+            border-bottom: 1px solid var(--grey-200)
+        }
+
+        .invoice-content .inv-table th:last-child,
+        .invoice-content .inv-table td:last-child {
+            text-align: right
+        }
+
+        .invoice-content .inv-table td {
+            padding: 12px;
+            font-size: .85rem;
+            border-bottom: 1px solid var(--grey-100)
+        }
+
+        .invoice-content .inv-totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 32px
+        }
+
+        .invoice-content .inv-totals table {
+            width: 280px
+        }
+
+        .invoice-content .inv-totals td {
+            padding: 6px 0;
+            font-size: .85rem
+        }
+
+        .invoice-content .inv-totals td:last-child {
+            text-align: right;
+            font-weight: 600
+        }
+
+        .invoice-content .inv-totals .grand-total td {
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding-top: 10px;
+            border-top: 2px solid var(--black)
+        }
+
+        .invoice-content .inv-footer {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid var(--grey-200);
+            font-size: .75rem;
+            color: var(--grey-400)
+        }
+
+        @media print {
+            body.admin-body * {
+                visibility: hidden
+            }
+
+            #invoiceModalOverlay,
+            #invoiceModalOverlay * {
+                visibility: visible
+            }
+
+            #invoiceModalOverlay {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                max-height: none;
+                background: white;
+                overflow: visible
+            }
+
+            #invoiceModalOverlay .admin-modal {
+                max-width: none;
+                box-shadow: none;
+                border-radius: 0;
+                width: 100%
+            }
+
+            #invoiceModalOverlay .modal-header {
+                display: none !important
+            }
+
+            #invoiceModalOverlay .modal-body {
+                padding: 20px
+            }
+        }
     </style>
 </head>
 
@@ -1017,10 +1243,10 @@
                 <form class="auth-form active" id="loginForm" onsubmit="handleAdminLogin(event)">
                     <div class="login-msg" id="loginMsg"></div>
                     <div class="login-field">
-                        <label>Username or Email</label>
-                        <span class="material-symbols-outlined field-icon">person</span>
-                        <input type="text" id="loginUser" placeholder="Enter username or email" autocomplete="username"
-                            required autofocus>
+                        <label>Email</label>
+                        <span class="material-symbols-outlined field-icon">mail</span>
+                        <input type="email" id="loginUser" placeholder="Enter admin email" autocomplete="email" required
+                            autofocus>
                     </div>
                     <div class="login-field">
                         <label>Password</label>
@@ -1082,6 +1308,10 @@
                     Categories</a>
                 <a onclick="showSection('prices',this)"><span class="material-symbols-outlined">payments</span> Quick
                     Prices</a>
+                <a onclick="showSection('users',this)"><span class="material-symbols-outlined">group</span>
+                    Users</a>
+                <a onclick="showSection('adminorders',this)"><span class="material-symbols-outlined">shopping_bag</span>
+                    Orders</a>
                 <div class="nav-divider"></div>
                 <a onclick="showSection('importexport',this)"><span class="material-symbols-outlined">swap_vert</span>
                     Import / Export</a>
@@ -1236,6 +1466,80 @@
                 </div>
             </div>
 
+            <!-- ===== USERS ===== -->
+            <div id="sec-users" class="admin-section">
+                <div class="admin-header">
+                    <h1>Users</h1>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 id="userCount">0 Users</h2>
+                        <div class="search-box"><span class="material-symbols-outlined">search</span><input type="text"
+                                id="userSearch" placeholder="Search users..." oninput="renderUsers()"></div>
+                    </div>
+                    <div style="max-height:calc(100vh - 280px);overflow-y:auto">
+                        <table class="admin-table" id="userTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Provider</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ORDERS ===== -->
+            <div id="sec-adminorders" class="admin-section">
+                <div class="admin-header">
+                    <h1>Orders</h1>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <div style="display:flex;align-items:center;gap:16px">
+                            <h2 id="orderCount">0 Orders</h2>
+                            <span style="font-size:.85rem;color:var(--gold-dark);font-weight:600"
+                                id="orderRevenue">₹0</span>
+                        </div>
+                        <div class="filter-bar">
+                            <select id="orderStatusFilter" onchange="renderAdminOrders()">
+                                <option value="">All Status</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                            </select>
+                            <div class="search-box"><span class="material-symbols-outlined">search</span><input
+                                    type="text" id="orderSearch" placeholder="Search orders..."
+                                    oninput="renderAdminOrders()"></div>
+                        </div>
+                    </div>
+                    <div style="max-height:calc(100vh - 280px);overflow-y:auto">
+                        <table class="admin-table" id="orderTable">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -1349,6 +1653,21 @@
         </div>
     </div>
 
+    <!-- INVOICE MODAL -->
+    <div class="admin-modal-overlay" id="invoiceModalOverlay" onclick="if(event.target===this)closeInvoice()">
+        <div class="admin-modal" style="max-width:800px">
+            <div class="modal-header">
+                <h2>Invoice</h2>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <button class="btn btn-primary btn-sm" onclick="printInvoice()"><span
+                            class="material-symbols-outlined" style="font-size:1rem">print</span> Print</button>
+                    <button onclick="closeInvoice()"><span class="material-symbols-outlined">close</span></button>
+                </div>
+            </div>
+            <div class="modal-body" id="invoiceBody"></div>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -1365,6 +1684,8 @@
             if (id === 'products') renderProducts();
             if (id === 'categories') renderCategories();
             if (id === 'prices') renderPrices();
+            if (id === 'users') { loadAdminUsers().then(() => renderUsers()); }
+            if (id === 'adminorders') { loadAllOrders().then(() => renderAdminOrders()); }
         }
 
         // ===================== TOAST =====================
@@ -1690,7 +2011,10 @@
         function getAdminDB() {
             let db = JSON.parse(localStorage.getItem('pmcAdminDB') || 'null');
             if (!db || !Array.isArray(db) || db.length === 0) {
-                db = [{ id: 1, name: 'Admin', email: 'admin@premium.com', username: 'admin', password: 'admin123', role: 'Super Admin', createdAt: new Date().toISOString() }];
+                db = [
+                    { id: 1, name: 'Gokul', email: 'nathgokul325@gmail.com', password: '11Mct@17', role: 'Super Admin', createdAt: new Date().toISOString() },
+                    { id: 2, name: 'Admin', email: 'admin@gmail.com', password: 'Admin@123', role: 'Admin', createdAt: new Date().toISOString() }
+                ];
                 localStorage.setItem('pmcAdminDB', JSON.stringify(db));
             }
             return db;
@@ -1717,13 +2041,13 @@
             const msgEl = document.getElementById('loginMsg');
             const db = getAdminDB();
 
-            const user = db.find(u => (u.username.toLowerCase() === input || u.email.toLowerCase() === input) && u.password === pass);
+            const user = db.find(u => u.email.toLowerCase() === input && u.password === pass);
             if (user) {
-                localStorage.setItem('pmcAdminSession', JSON.stringify({ id: user.id, username: user.username, name: user.name, role: user.role }));
+                localStorage.setItem('pmcAdminSession', JSON.stringify({ id: user.id, email: user.email, name: user.name, role: user.role }));
                 unlockAdmin();
             } else {
                 msgEl.className = 'login-msg error';
-                msgEl.textContent = 'Invalid username/email or password';
+                msgEl.textContent = 'Invalid email or password';
                 document.getElementById('loginPass').value = '';
                 document.getElementById('loginPass').focus();
                 const card = document.querySelector('.admin-login-card');
@@ -1823,6 +2147,193 @@
             }).catch(err => {
                 adminToast('Failed to upload: ' + err.message, 'error');
             });
+        }
+
+        // ===================== USERS (ADMIN) =====================
+        let _adminUsers = [];
+
+        async function loadAdminUsers() {
+            try {
+                const snap = await db.ref('users').once('value');
+                if (!snap.exists()) { _adminUsers = []; return; }
+                const data = snap.val();
+                _adminUsers = typeof data === 'object' ? Object.values(data) : [];
+            } catch (err) {
+                console.warn('Failed to load users:', err);
+                _adminUsers = [];
+            }
+        }
+
+        function renderUsers() {
+            const query = (document.getElementById('userSearch')?.value || '').toLowerCase();
+            let filtered = _adminUsers;
+            if (query) {
+                filtered = _adminUsers.filter(u =>
+                    (u.name || '').toLowerCase().includes(query) ||
+                    (u.email || '').toLowerCase().includes(query) ||
+                    (u.phone || '').toLowerCase().includes(query)
+                );
+            }
+            document.getElementById('userCount').textContent = filtered.length + ' User' + (filtered.length !== 1 ? 's' : '');
+            const tbody = document.querySelector('#userTable tbody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--grey-400)">No users found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = filtered.map((u, i) => {
+                const initials = (u.name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014';
+                return `<tr>
+                    <td>${i + 1}</td>
+                    <td><div class="user-cell"><div class="user-avatar">${initials}</div><div style="font-weight:600;font-size:.85rem">${u.name || '\u2014'}</div></div></td>
+                    <td style="font-size:.85rem">${u.email || '\u2014'}</td>
+                    <td style="font-size:.85rem">${u.phone || '\u2014'}</td>
+                    <td><span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--gold-dark)">${u.provider || 'email'}</span></td>
+                    <td style="font-size:.82rem;color:var(--grey-400)">${joined}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // ===================== ORDERS (ADMIN) =====================
+        let _allAdminOrders = [];
+
+        async function loadAllOrders() {
+            try {
+                const snap = await db.ref('orders').once('value');
+                if (!snap.exists()) { _allAdminOrders = []; return; }
+                const data = snap.val();
+                _allAdminOrders = [];
+                Object.keys(data).forEach(userKey => {
+                    const userOrders = data[userKey];
+                    if (typeof userOrders === 'object' && userOrders !== null) {
+                        Object.values(userOrders).forEach(order => {
+                            _allAdminOrders.push(order);
+                        });
+                    }
+                });
+                _allAdminOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
+            } catch (err) {
+                console.warn('Failed to load orders:', err);
+                _allAdminOrders = [];
+            }
+        }
+
+        function renderAdminOrders() {
+            const query = (document.getElementById('orderSearch')?.value || '').toLowerCase();
+            const statusFilter = document.getElementById('orderStatusFilter')?.value || '';
+            let filtered = _allAdminOrders;
+            if (statusFilter) filtered = filtered.filter(o => o.status === statusFilter);
+            if (query) {
+                filtered = filtered.filter(o =>
+                    (o.id || '').toLowerCase().includes(query) ||
+                    (o.address?.firstName || '').toLowerCase().includes(query) ||
+                    (o.address?.lastName || '').toLowerCase().includes(query) ||
+                    (o.address?.email || '').toLowerCase().includes(query) ||
+                    (o.address?.phone || '').toLowerCase().includes(query)
+                );
+            }
+            document.getElementById('orderCount').textContent = filtered.length + ' Order' + (filtered.length !== 1 ? 's' : '');
+            const totalRev = filtered.reduce((s, o) => s + (o.total || 0), 0);
+            document.getElementById('orderRevenue').textContent = '\u20b9' + totalRev.toLocaleString('en-IN');
+            const tbody = document.querySelector('#orderTable tbody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--grey-400)">No orders found</td></tr>';
+                return;
+            }
+            const payIcons = { cod: 'local_shipping', card: 'credit_card', upi: 'account_balance' };
+            const payLabels = { cod: 'COD', card: 'Card', upi: 'UPI' };
+            tbody.innerHTML = filtered.map(o => {
+                const date = o.date ? new Date(o.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014';
+                const customer = o.address ? ((o.address.firstName || '') + ' ' + (o.address.lastName || '')).trim() : '\u2014';
+                const itemCount = (o.items || []).length;
+                const status = o.status || 'confirmed';
+                return `<tr>
+                    <td style="font-weight:600;font-size:.82rem">${o.id || '\u2014'}</td>
+                    <td><div style="font-size:.85rem;font-weight:500">${customer || '\u2014'}</div><div style="font-size:.72rem;color:var(--grey-400)">${o.address?.email || ''}</div></td>
+                    <td style="font-size:.85rem">${itemCount} item${itemCount !== 1 ? 's' : ''}</td>
+                    <td style="font-weight:700">\u20b9${(o.total || 0).toLocaleString('en-IN')}</td>
+                    <td><span style="font-size:.78rem;display:inline-flex;align-items:center;gap:4px"><span class="material-symbols-outlined" style="font-size:.9rem">${payIcons[o.payment] || 'payments'}</span>${payLabels[o.payment] || o.payment || '\u2014'}</span></td>
+                    <td><span class="order-status-badge ${status}">${status}</span></td>
+                    <td style="font-size:.82rem;color:var(--grey-400)">${date}</td>
+                    <td><div class="action-btns"><button class="edit-btn" onclick="openInvoice('${o.id}')" title="Generate Invoice"><span class="material-symbols-outlined">receipt_long</span></button></div></td>
+                </tr>`;
+            }).join('');
+        }
+
+        // ===================== INVOICE =====================
+        function openInvoice(orderId) {
+            const order = _allAdminOrders.find(o => o.id === orderId);
+            if (!order) { adminToast('Order not found', 'error'); return; }
+            const addr = order.address || {};
+            const date = order.date ? new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014';
+            const payLabels = { cod: 'Cash on Delivery', card: 'Credit / Debit Card', upi: 'UPI' };
+
+            const itemsHTML = (order.items || []).map(item => {
+                const p = item.product || getProduct(item.productId) || {};
+                const unitPrice = p.price || 0;
+                const lineTotal = unitPrice * (item.qty || 1);
+                return `<tr>
+                    <td style="text-align:left">${p.name || 'Product'}</td>
+                    <td>${item.size || '\u2014'}</td>
+                    <td style="text-align:center">${item.qty || 1}</td>
+                    <td>\u20b9${unitPrice.toLocaleString('en-IN')}</td>
+                    <td>\u20b9${lineTotal.toLocaleString('en-IN')}</td>
+                </tr>`;
+            }).join('');
+
+            document.getElementById('invoiceBody').innerHTML = `
+                <div class="invoice-content">
+                    <div class="inv-header">
+                        <div>
+                            <div class="inv-logo">PREMIUM<span>.</span></div>
+                            <p style="font-size:.8rem;color:var(--grey-400);margin:4px 0 0">Premium Men's Clothing</p>
+                        </div>
+                        <div class="inv-meta">
+                            <h2>INVOICE</h2>
+                            <p><strong>Order:</strong> ${order.id}</p>
+                            <p><strong>Date:</strong> ${date}</p>
+                            <p><strong>Payment:</strong> ${payLabels[order.payment] || order.payment || '\u2014'}</p>
+                        </div>
+                    </div>
+                    <div class="inv-parties">
+                        <div class="inv-party">
+                            <h3>Bill To</h3>
+                            <p><strong>${((addr.firstName || '') + ' ' + (addr.lastName || '')).trim() || 'Customer'}</strong><br>
+                            ${addr.email || ''}<br>
+                            ${addr.phone || ''}</p>
+                        </div>
+                        <div class="inv-party">
+                            <h3>Ship To</h3>
+                            <p>${addr.street || ''}${addr.street ? '<br>' : ''}
+                            ${addr.city || ''}${addr.state ? ', ' + addr.state : ''} ${addr.pincode || ''}<br>
+                            ${addr.country || 'India'}</p>
+                        </div>
+                    </div>
+                    <table class="inv-table">
+                        <thead><tr><th style="text-align:left">Product</th><th>Size</th><th style="text-align:center">Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+                        <tbody>${itemsHTML}</tbody>
+                    </table>
+                    <div class="inv-totals">
+                        <table>
+                            <tr><td>Subtotal</td><td>\u20b9${(order.subtotal || 0).toLocaleString('en-IN')}</td></tr>
+                            <tr><td>Shipping</td><td>${order.shipping === 0 ? 'FREE' : '\u20b9' + (order.shipping || 0).toLocaleString('en-IN')}</td></tr>
+                            <tr class="grand-total"><td>Grand Total</td><td>\u20b9${(order.total || 0).toLocaleString('en-IN')}</td></tr>
+                        </table>
+                    </div>
+                    <div class="inv-footer">
+                        <p>Thank you for shopping with <strong>PREMIUM.</strong></p>
+                        <p>For queries, contact support@premium.com</p>
+                    </div>
+                </div>`;
+            document.getElementById('invoiceModalOverlay').classList.add('active');
+        }
+
+        function closeInvoice() {
+            document.getElementById('invoiceModalOverlay').classList.remove('active');
+        }
+
+        function printInvoice() {
+            window.print();
         }
 
         // ===================== INIT =====================

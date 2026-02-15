@@ -456,6 +456,45 @@
                 transform: rotate(360deg)
             }
         }
+
+        .otp-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .otp-inputs input {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border: 2px solid var(--grey-200);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            transition: var(--transition);
+            font-family: var(--font-heading);
+            color: var(--black);
+        }
+
+        .otp-inputs input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, .15);
+        }
+
+        @media (max-width: 420px) {
+            .otp-inputs input {
+                width: 40px;
+                height: 48px;
+                font-size: 1.1rem;
+            }
+
+            .otp-inputs {
+                gap: 6px;
+            }
+        }
     </style>
 </head>
 
@@ -492,35 +531,80 @@
                         </div>
                         <div class="remember-row">
                             <label><input type="checkbox" id="rememberMe"> Remember me</label>
-                            <a href="#">Forgot password?</a>
+                            <a href="#" onclick="showForgotPassword(event)">Forgot password?</a>
                         </div>
                         <button type="submit" class="auth-submit">Sign In</button>
                     </form>
-                    <div class="divider">or continue with</div>
-                    <div class="social-btns">
-                        <button id="googleBtn" onclick="signInWithGoogle()">
-                            <div class="spinner"></div><svg viewBox="0 0 24 24">
-                                <path
-                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-                                    fill="#4285F4" />
-                                <path
-                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                    fill="#34A853" />
-                                <path
-                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                                    fill="#FBBC05" />
-                                <path
-                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                    fill="#EA4335" />
-                            </svg> Google
-                        </button>
-                        <button id="appleBtn" onclick="signInWithApple()">
-                            <div class="spinner"></div><svg viewBox="0 0 24 24">
-                                <path
-                                    d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"
-                                    fill="currentColor" />
-                            </svg> Apple
-                        </button>
+
+                </div>
+
+                <!-- FORGOT PASSWORD -->
+                <div class="auth-form-section" id="forgotSection">
+                    <div class="auth-msg" id="forgotMsg"></div>
+                    <!-- Step 1: Enter email -->
+                    <div id="forgotStep1">
+                        <p style="font-size:.85rem;color:var(--grey-500);margin-bottom:20px;text-align:center">
+                            Enter your email address and we'll send you a verification code.
+                        </p>
+                        <form onsubmit="handleForgotEmail(event)">
+                            <div class="field">
+                                <label>Email Address</label>
+                                <span class="material-symbols-outlined icon">mail</span>
+                                <input type="email" id="forgotEmail" placeholder="you@example.com" required autofocus>
+                            </div>
+                            <button type="submit" class="auth-submit" id="sendOtpBtn">Send OTP</button>
+                        </form>
+                    </div>
+                    <!-- Step 2: Enter OTP -->
+                    <div id="forgotStep2" style="display:none">
+                        <p style="font-size:.85rem;color:var(--grey-500);margin-bottom:20px;text-align:center">
+                            We've sent a 6-digit code to <strong id="otpEmailDisplay"></strong>
+                        </p>
+                        <form onsubmit="handleVerifyOtp(event)">
+                            <div class="otp-inputs" id="otpInputs">
+                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                            </div>
+                            <button type="submit" class="auth-submit">Verify Code</button>
+                        </form>
+                        <div style="text-align:center;margin-top:12px">
+                            <span id="otpTimer" style="font-size:.78rem;color:var(--grey-400)"></span>
+                            <button id="resendOtpBtn" onclick="resendOtp()"
+                                style="display:none;background:none;border:none;color:var(--gold-dark);font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font-body)">Resend
+                                Code</button>
+                        </div>
+                    </div>
+                    <!-- Step 3: Set new password -->
+                    <div id="forgotStep3" style="display:none">
+                        <p style="font-size:.85rem;color:var(--success);margin-bottom:20px;text-align:center">
+                            ✓ Email verified! Set your new password below.
+                        </p>
+                        <form onsubmit="handleResetPassword(event)">
+                            <div class="field">
+                                <label>New Password</label>
+                                <span class="material-symbols-outlined icon">lock</span>
+                                <input type="password" id="resetNewPass" placeholder="Min. 8 characters" required
+                                    minlength="8">
+                                <button type="button" class="toggle-pw"
+                                    onclick="togglePassword('resetNewPass',this)"><span
+                                        class="material-symbols-outlined">visibility</span></button>
+                            </div>
+                            <div class="field">
+                                <label>Confirm New Password</label>
+                                <span class="material-symbols-outlined icon">lock</span>
+                                <input type="password" id="resetConfirmPass" placeholder="Re-enter new password"
+                                    required>
+                            </div>
+                            <button type="submit" class="auth-submit">Reset Password</button>
+                        </form>
+                    </div>
+                    <div style="text-align:center;margin-top:16px">
+                        <a href="#" onclick="backToLogin(event)" style="font-size:.82rem;color:var(--grey-500)">← Back
+                            to Sign In</a>
                     </div>
                 </div>
 
@@ -569,7 +653,7 @@
                     <h2 class="profile-name" id="profileName"></h2>
                     <p class="profile-email" id="profileEmail"></p>
                     <div class="profile-links">
-                        <a href="track.html"><span class="material-symbols-outlined"
+                        <a href="orders.html"><span class="material-symbols-outlined"
                                 style="font-size:1.1rem">local_shipping</span> My Orders</a>
                         <a href="wishlist.html"><span class="material-symbols-outlined"
                                 style="font-size:1.1rem">favorite</span> My Wishlist</a>
@@ -583,35 +667,11 @@
         </div>
     </div>
     <div id="footer"></div>
-    <!-- Social Login Modal -->
-    <div class="social-modal-overlay" id="socialModal"
-        style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
-        <div
-            style="background:#fff;border-radius:16px;max-width:400px;width:90%;padding:36px;text-align:center;animation:authSlideUp .4s ease;box-shadow:0 20px 60px rgba(0,0,0,.3)">
-            <div id="socialIcon" style="margin-bottom:16px"></div>
-            <h3 id="socialTitle" style="font-size:1.2rem;margin-bottom:4px"></h3>
-            <p style="font-size:.82rem;color:var(--grey-400);margin-bottom:24px">Continue with your account</p>
-            <form onsubmit="completeSocialLogin(event)">
-                <div class="field">
-                    <label>Full Name</label>
-                    <span class="material-symbols-outlined icon">person</span>
-                    <input type="text" id="socialName" placeholder="Your full name" required>
-                </div>
-                <div class="field">
-                    <label>Email Address</label>
-                    <span class="material-symbols-outlined icon">mail</span>
-                    <input type="email" id="socialEmail" placeholder="you@example.com" required>
-                </div>
-                <input type="hidden" id="socialProvider">
-                <button type="submit" class="auth-submit" id="socialSubmitBtn">Continue</button>
-                <button type="button" onclick="closeSocialModal()"
-                    style="width:100%;padding:12px;margin-top:10px;background:none;border:1px solid var(--grey-200);border-radius:8px;cursor:pointer;font-size:.82rem;color:var(--grey-500);font-family:var(--font-body)">Cancel</button>
-            </form>
-        </div>
-    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="firebase-config.js"></script>
     <script src="data.js"></script>
     <script src="app.js"></script>
@@ -731,74 +791,211 @@
             document.getElementById('profileEmail').textContent = user.email;
         }
 
-        // ===================== SOCIAL LOGIN (Google & Apple via modal) =====================
-        function signInWithGoogle() { openSocialModal('google'); }
-        function signInWithApple() { openSocialModal('apple'); }
+        // ===================== FORGOT PASSWORD WITH EMAIL OTP =====================
+        // SETUP: Go to https://www.emailjs.com/ → Create free account → 
+        // 1. Add an Email Service (Gmail etc.) → copy Service ID
+        // 2. Create Email Template with variables: {{to_email}}, {{otp_code}}, {{to_name}}
+        //    Subject: "Your PREMIUM. Password Reset Code: {{otp_code}}"
+        //    Body: "Hi {{to_name}}, your verification code is: {{otp_code}}. Valid for 5 minutes."
+        // 3. Copy Template ID
+        // 4. Go to Account → copy Public Key
+        // 5. Replace the 3 values below:
+        const EMAILJS_PUBLIC_KEY = 'mpQxiMcG9ZM2UQngg';
+        const EMAILJS_SERVICE_ID = 'service_dq1n18f';
+        const EMAILJS_TEMPLATE_ID = 'template_mbpd6ze';
 
-        function openSocialModal(provider) {
-            const modal = document.getElementById('socialModal');
-            const icon = document.getElementById('socialIcon');
-            const title = document.getElementById('socialTitle');
-            const submitBtn = document.getElementById('socialSubmitBtn');
+        // Initialize EmailJS
+        if (typeof emailjs !== 'undefined') emailjs.init(EMAILJS_PUBLIC_KEY);
 
-            document.getElementById('socialProvider').value = provider;
-            document.getElementById('socialName').value = '';
-            document.getElementById('socialEmail').value = '';
+        let forgotEmailVerified = '';
+        let generatedOtp = '';
+        let otpExpiry = 0;
+        let otpTimerInterval = null;
 
-            if (provider === 'google') {
-                icon.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>';
-                title.textContent = 'Sign in with Google';
-                submitBtn.style.background = '#4285F4';
-                submitBtn.style.color = '#fff';
-                submitBtn.textContent = 'Continue with Google';
-            } else {
-                icon.innerHTML = '<svg viewBox="0 0 24 24" width="40" height="40"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="#000"/></svg>';
-                title.textContent = 'Sign in with Apple';
-                submitBtn.style.background = '#000';
-                submitBtn.style.color = '#fff';
-                submitBtn.textContent = 'Continue with Apple';
-            }
-
-            modal.style.display = 'flex';
-            document.getElementById('socialName').focus();
-        }
-
-        function closeSocialModal() {
-            document.getElementById('socialModal').style.display = 'none';
-        }
-
-        async function completeSocialLogin(e) {
+        function showForgotPassword(e) {
             e.preventDefault();
-            const provider = document.getElementById('socialProvider').value;
-            const name = document.getElementById('socialName').value.trim();
-            const email = document.getElementById('socialEmail').value.trim();
+            document.getElementById('authTabs').style.display = 'none';
+            document.querySelectorAll('.auth-form-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('forgotSection').classList.add('active');
+            document.getElementById('forgotMsg').textContent = '';
+            document.getElementById('forgotStep1').style.display = '';
+            document.getElementById('forgotStep2').style.display = 'none';
+            document.getElementById('forgotStep3').style.display = 'none';
+            document.getElementById('forgotEmail').value = document.getElementById('loginEmail').value || '';
+            document.getElementById('forgotEmail').focus();
+            clearInterval(otpTimerInterval);
+        }
 
-            const tempPass = '__social_' + provider + '_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-            let result = await FirebaseAuth.signUp(email, tempPass, name, '');
-            if (!result.ok && result.error.includes('already registered')) {
-                const existing = await FirebaseAuth.findByEmail(email);
-                if (existing) {
-                    Store.login({ id: existing.uid, name: existing.name || name, email, phone: existing.phone || '' });
-                    closeSocialModal();
-                    showToast('Welcome back, ' + (existing.name || name).split(' ')[0] + '!');
-                    showProfile({ name: existing.name || name, email });
-                    return;
+        function backToLogin(e) {
+            e.preventDefault();
+            clearInterval(otpTimerInterval);
+            document.getElementById('authTabs').style.display = 'flex';
+            document.querySelectorAll('.auth-form-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('loginSection').classList.add('active');
+            document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.remove('active'));
+            document.querySelector('.auth-tabs button:first-child').classList.add('active');
+            document.getElementById('loginMsg').textContent = '';
+        }
+
+        function generateOtp() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function startOtpTimer() {
+            let seconds = 60;
+            const timerEl = document.getElementById('otpTimer');
+            const resendBtn = document.getElementById('resendOtpBtn');
+            resendBtn.style.display = 'none';
+            timerEl.style.display = '';
+            clearInterval(otpTimerInterval);
+            otpTimerInterval = setInterval(() => {
+                seconds--;
+                timerEl.textContent = 'Resend code in ' + seconds + 's';
+                if (seconds <= 0) {
+                    clearInterval(otpTimerInterval);
+                    timerEl.style.display = 'none';
+                    resendBtn.style.display = '';
                 }
+            }, 1000);
+            timerEl.textContent = 'Resend code in 60s';
+        }
+
+        async function sendOtpEmail(email, otp, userName) {
+            try {
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                    to_email: email,
+                    to_name: userName || 'User',
+                    otp_code: otp,
+                    email: email,
+                    reply_to: email,
+                    message: 'Your verification code is: ' + otp,
+                    from_name: 'PREMIUM Store'
+                });
+                return true;
+            } catch (err) {
+                console.error('EmailJS send failed:', err);
+                alert('EmailJS Error: ' + (err?.text || err?.message || JSON.stringify(err)));
+                return false;
             }
-            if (!result.ok) {
-                showToast(result.error, 'error');
+        }
+
+        async function handleForgotEmail(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgotEmail').value.trim();
+            const msgEl = document.getElementById('forgotMsg');
+            const btn = document.getElementById('sendOtpBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            const user = await FirebaseAuth.findByEmail(email);
+            if (!user) {
+                showErr(msgEl, 'No account found with this email address.');
+                btn.disabled = false;
+                btn.textContent = 'Send OTP';
                 return;
             }
-            Store.login({ id: result.user.uid, name, email, phone: '' });
-            closeSocialModal();
-            showToast('Welcome, ' + name.split(' ')[0] + '!');
-            showProfile({ name, email });
+
+            // Generate OTP and send
+            generatedOtp = generateOtp();
+            otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+            const sent = await sendOtpEmail(email, generatedOtp, user.name);
+
+            if (!sent) {
+                showErr(msgEl, 'Failed to send verification code. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Send OTP';
+                return;
+            }
+
+            forgotEmailVerified = email;
+            document.getElementById('otpEmailDisplay').textContent = email;
+            document.getElementById('forgotStep1').style.display = 'none';
+            document.getElementById('forgotStep2').style.display = '';
+            msgEl.className = 'auth-msg success';
+            msgEl.textContent = '✓ Verification code sent to your email!';
+            setupOtpInputs();
+            startOtpTimer();
+            btn.disabled = false;
+            btn.textContent = 'Send OTP';
         }
 
-        // Close modal on overlay click
-        document.getElementById('socialModal').addEventListener('click', function (e) {
-            if (e.target === this) closeSocialModal();
-        });
+        function setupOtpInputs() {
+            const inputs = document.querySelectorAll('#otpInputs input');
+            inputs.forEach(i => i.value = '');
+            inputs[0].focus();
+            inputs.forEach((inp, idx) => {
+                inp.oninput = function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (this.value && idx < inputs.length - 1) inputs[idx + 1].focus();
+                };
+                inp.onkeydown = function (e) {
+                    if (e.key === 'Backspace' && !this.value && idx > 0) inputs[idx - 1].focus();
+                };
+                inp.onpaste = function (e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+                    paste.split('').forEach((ch, i) => { if (inputs[idx + i]) inputs[idx + i].value = ch; });
+                    if (inputs[Math.min(idx + paste.length, inputs.length - 1)]) inputs[Math.min(idx + paste.length, inputs.length - 1)].focus();
+                };
+            });
+        }
+
+        async function resendOtp() {
+            const msgEl = document.getElementById('forgotMsg');
+            generatedOtp = generateOtp();
+            otpExpiry = Date.now() + 5 * 60 * 1000;
+            const user = await FirebaseAuth.findByEmail(forgotEmailVerified);
+            const sent = await sendOtpEmail(forgotEmailVerified, generatedOtp, user ? user.name : 'User');
+            if (sent) {
+                msgEl.className = 'auth-msg success';
+                msgEl.textContent = '✓ New code sent!';
+                startOtpTimer();
+            } else {
+                showErr(msgEl, 'Failed to resend. Please try again.');
+            }
+        }
+
+        function handleVerifyOtp(e) {
+            e.preventDefault();
+            const msgEl = document.getElementById('forgotMsg');
+            const inputs = document.querySelectorAll('#otpInputs input');
+            const entered = Array.from(inputs).map(i => i.value).join('');
+
+            if (entered.length < 6) { showErr(msgEl, 'Please enter the complete 6-digit code.'); return; }
+            if (Date.now() > otpExpiry) { showErr(msgEl, 'Code expired. Please request a new one.'); return; }
+            if (entered !== generatedOtp) { showErr(msgEl, 'Invalid code. Please check and try again.'); inputs.forEach(i => i.value = ''); inputs[0].focus(); return; }
+
+            // OTP verified!
+            clearInterval(otpTimerInterval);
+            document.getElementById('forgotStep2').style.display = 'none';
+            document.getElementById('forgotStep3').style.display = '';
+            msgEl.className = 'auth-msg success';
+            msgEl.textContent = '';
+            document.getElementById('resetNewPass').focus();
+        }
+
+        async function handleResetPassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('resetNewPass').value;
+            const confirm = document.getElementById('resetConfirmPass').value;
+            const msgEl = document.getElementById('forgotMsg');
+
+            if (newPass.length < 8) { showErr(msgEl, 'Password must be at least 8 characters'); return; }
+            if (newPass !== confirm) { showErr(msgEl, 'Passwords do not match'); return; }
+
+            const result = await FirebaseAuth.resetPassword(forgotEmailVerified, newPass);
+            if (!result.ok) { showErr(msgEl, result.error); return; }
+
+            // Success — go back to login
+            backToLogin(e);
+            const loginMsg = document.getElementById('loginMsg');
+            loginMsg.className = 'auth-msg success';
+            loginMsg.textContent = '✓ Password reset successful! Sign in with your new password.';
+            document.getElementById('loginEmail').value = forgotEmailVerified;
+            document.getElementById('loginPass').value = '';
+            document.getElementById('loginPass').focus();
+        }
 
         // Check if already logged in
         if (Store.isLoggedIn()) showProfile();
