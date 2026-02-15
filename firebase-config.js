@@ -136,134 +136,82 @@ const FirebaseDB = {
 };
 
 // ============================================================
-// FIREBASE AUTH — User Authentication & Profiles
+// FIREBASE AUTH — User Accounts via Realtime Database
 // ============================================================
+// Uses SHA-256 password hashing (Web Crypto API)
+// Stores users in RTDB under /users/{emailKey}
 
-const auth = firebase.auth();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+// Hash a password using SHA-256
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password + '_pmc_salt_2024');
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Convert email to a safe Firebase key (no dots, @, etc.)
+function emailToKey(email) {
+    return email.toLowerCase().replace(/[.#$\[\]@]/g, '_');
+}
 
 const FirebaseAuth = {
     // Sign up with email & password
     async signUp(email, password, name, phone) {
         try {
-            const cred = await auth.createUserWithEmailAndPassword(email, password);
-            // Update display name
-            await cred.user.updateProfile({ displayName: name });
-            // Save user profile to Realtime DB
-            await db.ref('users/' + cred.user.uid).set({
-                name,
-                email: email.toLowerCase(),
-                phone: phone || '',
-                createdAt: new Date().toISOString(),
-                provider: 'email'
-            });
-            return { ok: true, user: { uid: cred.user.uid, name, email, phone } };
+            const key = emailToKey(email);
+            const snap = await db.ref('users/' + key).once('value');
+            if (snap.exists()) {
+                return { ok: false, error: 'This email is already registered. Please login instead.' };
+            }
+            const hashedPw = await hashPassword(password);
+            const uid = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+            const userData = {
+                uid, name, email: email.toLowerCase(), phone: phone || '',
+                password: hashedPw, createdAt: new Date().toISOString(), provider: 'email'
+            };
+            await db.ref('users/' + key).set(userData);
+            return { ok: true, user: { uid, name, email: email.toLowerCase(), phone: phone || '' } };
         } catch (err) {
-            let message = err.message;
-            if (err.code === 'auth/email-already-in-use') message = 'This email is already registered. Please login instead.';
-            if (err.code === 'auth/weak-password') message = 'Password should be at least 6 characters.';
-            if (err.code === 'auth/invalid-email') message = 'Please enter a valid email address.';
-            return { ok: false, error: message };
+            return { ok: false, error: err.message || 'Sign up failed. Please try again.' };
         }
     },
 
     // Sign in with email & password
     async signIn(email, password) {
         try {
-            const cred = await auth.signInWithEmailAndPassword(email, password);
-            // Fetch profile from DB
-            const snap = await db.ref('users/' + cred.user.uid).once('value');
-            const profile = snap.val() || {};
-            return {
-                ok: true,
-                user: {
-                    uid: cred.user.uid,
-                    name: cred.user.displayName || profile.name || '',
-                    email: cred.user.email,
-                    phone: profile.phone || ''
-                }
-            };
+            const key = emailToKey(email);
+            const snap = await db.ref('users/' + key).once('value');
+            if (!snap.exists()) return { ok: false, error: 'No account found with this email.' };
+            const user = snap.val();
+            const hashedPw = await hashPassword(password);
+            if (user.password !== hashedPw) return { ok: false, error: 'Incorrect password. Please try again.' };
+            return { ok: true, user: { uid: user.uid, name: user.name, email: user.email, phone: user.phone || '' } };
         } catch (err) {
-            let message = err.message;
-            if (err.code === 'auth/user-not-found') message = 'No account found with this email.';
-            if (err.code === 'auth/wrong-password') message = 'Incorrect password. Please try again.';
-            if (err.code === 'auth/invalid-credential') message = 'Invalid email or password.';
-            if (err.code === 'auth/too-many-requests') message = 'Too many failed attempts. Please try again later.';
-            return { ok: false, error: message };
+            return { ok: false, error: err.message || 'Sign in failed. Please try again.' };
         }
     },
 
-    // Sign in with Google (real OAuth popup)
-    async signInWithGoogle() {
-        try {
-            const result = await auth.signInWithPopup(googleProvider);
-            const user = result.user;
-            // Check if profile exists, if not create one
-            const snap = await db.ref('users/' + user.uid).once('value');
-            if (!snap.exists()) {
-                await db.ref('users/' + user.uid).set({
-                    name: user.displayName || '',
-                    email: user.email,
-                    phone: user.phoneNumber || '',
-                    createdAt: new Date().toISOString(),
-                    provider: 'google',
-                    photoURL: user.photoURL || ''
-                });
-            }
-            const profile = snap.val() || {};
-            return {
-                ok: true,
-                user: {
-                    uid: user.uid,
-                    name: user.displayName || profile.name || '',
-                    email: user.email,
-                    phone: profile.phone || ''
-                }
-            };
-        } catch (err) {
-            if (err.code === 'auth/popup-closed-by-user') return { ok: false, error: 'Sign-in cancelled.' };
-            if (err.code === 'auth/popup-blocked') return { ok: false, error: 'Pop-up blocked. Please allow pop-ups and try again.' };
-            return { ok: false, error: err.message };
-        }
-    },
-
-    // Sign out
+    // Sign out (clears local session)
     async signOut() {
-        await auth.signOut();
+        Store.logout();
     },
 
-    // Get current user
-    getCurrentUser() {
-        return auth.currentUser;
+    // Find user by email
+    async findByEmail(email) {
+        const key = emailToKey(email);
+        const snap = await db.ref('users/' + key).once('value');
+        return snap.exists() ? snap.val() : null;
     },
 
-    // Auth state listener — fires on login/logout
-    onAuthChange(callback) {
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                const snap = await db.ref('users/' + user.uid).once('value');
-                const profile = snap.val() || {};
-                callback({
-                    uid: user.uid,
-                    name: user.displayName || profile.name || '',
-                    email: user.email,
-                    phone: profile.phone || '',
-                    photoURL: user.photoURL || profile.photoURL || ''
-                });
-            } else {
-                callback(null);
-            }
-        });
-    },
-
-    // Update user profile in DB
-    async updateProfile(uid, updates) {
+    // Update user profile
+    async updateProfile(email, updates) {
         try {
-            await db.ref('users/' + uid).update(updates);
+            const key = emailToKey(email);
+            await db.ref('users/' + key).update(updates);
             return { ok: true };
         } catch (err) {
             return { ok: false, error: err.message };
         }
     }
 };
-
