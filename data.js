@@ -238,16 +238,31 @@ const Store = {
   },
 
   // ORDERS
+  isValidOrder(order) {
+    return order && order.id && order.date && order.total != null && Array.isArray(order.items) && order.items.length > 0;
+  },
   getOrders() {
     return JSON.parse(localStorage.getItem('pmcOrders') || '[]');
   },
+  getOrdersForUser(email) {
+    if (!email) return this.getOrders();
+    const all = this.getOrders();
+    return all.filter(o => {
+      const orderEmail = o.userEmail || (o.address && o.address.email) || '';
+      return orderEmail.toLowerCase() === email.toLowerCase();
+    });
+  },
   addOrder(order) {
+    // Tag with userEmail if not already set
+    if (!order.userEmail) {
+      const user = this.getUser();
+      order.userEmail = (user && user.email) ? user.email.toLowerCase() : (order.address && order.address.email ? order.address.email.toLowerCase() : '');
+    }
     const orders = this.getOrders();
     orders.unshift(order);
     localStorage.setItem('pmcOrders', JSON.stringify(orders));
-    // Always save to Firebase — use logged-in user email or order address email
-    const user = this.getUser();
-    const email = (user && user.email) || (order.address && order.address.email);
+    // Always save to Firebase
+    const email = order.userEmail || (order.address && order.address.email);
     if (email && typeof FirebaseOrders !== 'undefined') {
       FirebaseOrders.save(email, order);
     }

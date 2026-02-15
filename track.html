@@ -47,24 +47,25 @@
             const orderId = document.getElementById('orderIdInput').value.trim();
             if (!orderId) { showToast('Please enter an order ID', 'error'); return; }
 
-            // Try localStorage first, then Firebase
-            let order = Store.getOrders().find(o => o.id === orderId);
+            // Always check Firebase first for latest status
+            let order = null;
+            try {
+                const snap = await db.ref('orders').once('value');
+                if (snap.exists()) {
+                    const data = snap.val();
+                    Object.values(data).forEach(userOrders => {
+                        if (typeof userOrders === 'object' && userOrders !== null) {
+                            Object.values(userOrders).forEach(o => {
+                                if (o.id === orderId && o.date) order = o;
+                            });
+                        }
+                    });
+                }
+            } catch (err) { console.warn('Firebase lookup failed:', err); }
 
-            // If not found locally, search Firebase
+            // Fallback to localStorage if not found in Firebase
             if (!order) {
-                try {
-                    const snap = await db.ref('orders').once('value');
-                    if (snap.exists()) {
-                        const data = snap.val();
-                        Object.values(data).forEach(userOrders => {
-                            if (typeof userOrders === 'object' && userOrders !== null) {
-                                Object.values(userOrders).forEach(o => {
-                                    if (o.id === orderId) order = o;
-                                });
-                            }
-                        });
-                    }
-                } catch (err) { console.warn('Firebase lookup failed:', err); }
+                order = Store.getOrders().find(o => o.id === orderId);
             }
 
             const statusOrder = ['confirmed', 'packed', 'transit', 'out_for_delivery', 'delivered'];

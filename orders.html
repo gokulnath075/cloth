@@ -306,16 +306,19 @@
 
         async function loadOrders() {
             const user = Store.getUser();
+            const userEmail = user && user.email ? user.email.toLowerCase() : '';
             let orders = [];
 
             // Try Firebase first if logged in
-            if (user && user.email && typeof FirebaseOrders !== 'undefined') {
-                orders = await FirebaseOrders.getAll(user.email);
+            if (userEmail && typeof FirebaseOrders !== 'undefined') {
+                orders = await FirebaseOrders.getAll(userEmail);
             }
 
-            // Fallback/merge with localStorage
-            const localOrders = Store.getOrders();
+            // Get user-scoped local orders
+            const localOrders = userEmail ? Store.getOrdersForUser(userEmail) : Store.getOrders();
+
             if (orders.length === 0) {
+                // No Firebase data — use local orders only
                 orders = localOrders;
             } else {
                 // Merge: add local orders not in Firebase
@@ -323,6 +326,23 @@
                 localOrders.forEach(lo => {
                     if (!fbIds.has(lo.id)) orders.push(lo);
                 });
+            }
+
+            // Filter out invalid/ghost orders
+            orders = orders.filter(o => Store.isValidOrder(o));
+
+            // Sort newest first
+            orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // Sync merged list back to localStorage (replace only this user's orders)
+            if (userEmail) {
+                const allLocal = Store.getOrders();
+                // Remove old entries for this user, add fresh merged ones
+                const otherOrders = allLocal.filter(o => {
+                    const oEmail = (o.userEmail || (o.address && o.address.email) || '').toLowerCase();
+                    return oEmail !== userEmail;
+                });
+                localStorage.setItem('pmcOrders', JSON.stringify([...orders, ...otherOrders]));
             }
 
             renderOrders(orders);

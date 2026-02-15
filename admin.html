@@ -2190,7 +2190,10 @@
                     const userOrders = data[userKey];
                     if (typeof userOrders === 'object' && userOrders !== null) {
                         Object.values(userOrders).forEach(order => {
-                            _allAdminOrders.push(order);
+                            if (order && order.id && order.date) {
+                                order._fbUserKey = userKey;
+                                _allAdminOrders.push(order);
+                            }
                         });
                     }
                 });
@@ -2250,11 +2253,10 @@
             const order = _allAdminOrders.find(o => o.id === orderId);
             if (!order) return;
             order.status = newStatus;
-            // Update in Firebase using emailToKey for correct path
+            // Update in Firebase using the stored key from loadAllOrders
             try {
-                const email = (order.address && order.address.email) || '';
-                if (email && typeof emailToKey === 'function') {
-                    const key = emailToKey(email);
+                const key = order._fbUserKey;
+                if (key) {
                     await db.ref('orders/' + key + '/' + orderId + '/status').set(newStatus);
                 }
                 adminToast('Status updated to ' + newStatus.replace(/_/g, ' '));
@@ -2267,11 +2269,10 @@
             if (!confirm('Remove this order permanently?')) return;
             const order = _allAdminOrders.find(o => o.id === orderId);
             if (!order) return;
-            // Remove from Firebase using emailToKey for correct path
+            // Remove from Firebase using the stored key from loadAllOrders
             try {
-                const email = (order.address && order.address.email) || '';
-                if (email && typeof emailToKey === 'function') {
-                    const key = emailToKey(email);
+                const key = order._fbUserKey;
+                if (key) {
                     await db.ref('orders/' + key + '/' + orderId).remove();
                 }
             } catch (err) {
@@ -2284,8 +2285,13 @@
         }
 
         // ===================== INVOICE =====================
-        function openInvoice(orderId) {
-            const order = _allAdminOrders.find(o => o.id === orderId);
+        async function openInvoice(orderId) {
+            let order = _allAdminOrders.find(o => o.id === orderId);
+            // Fallback: if orders haven't loaded yet, try loading them
+            if (!order) {
+                await loadAllOrders();
+                order = _allAdminOrders.find(o => o.id === orderId);
+            }
             if (!order) { adminToast('Order not found', 'error'); return; }
             const addr = order.address || {};
             const date = order.date ? new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014';
@@ -2293,12 +2299,14 @@
 
             const itemsHTML = (order.items || []).map(item => {
                 const p = item.product || getProduct(item.productId) || {};
-                const unitPrice = p.price || 0;
-                const lineTotal = unitPrice * (item.qty || 1);
+                const name = p.name || item.name || 'Product';
+                const unitPrice = p.price || item.price || 0;
+                const qty = item.qty || 1;
+                const lineTotal = unitPrice * qty;
                 return `<tr>
-                    <td style="text-align:left">${p.name || 'Product'}</td>
+                    <td style="text-align:left">${name}</td>
                     <td>${item.size || '\u2014'}</td>
-                    <td style="text-align:center">${item.qty || 1}</td>
+                    <td style="text-align:center">${qty}</td>
                     <td>\u20b9${unitPrice.toLocaleString('en-IN')}</td>
                     <td>\u20b9${lineTotal.toLocaleString('en-IN')}</td>
                 </tr>`;

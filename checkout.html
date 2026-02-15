@@ -126,8 +126,11 @@
             const shipping = subtotal >= 500 ? 0 : 50;
             const payment = document.querySelector('input[name="payment"]:checked').value;
 
+            const user = Store.getUser();
+            const shipEmail = document.getElementById('shipEmail').value;
             const order = {
                 id: orderId,
+                userEmail: (user && user.email) ? user.email.toLowerCase() : shipEmail.toLowerCase(),
                 items: cart.map(item => ({ ...item, product: getProduct(item.productId) })),
                 subtotal: subtotal,
                 shipping: shipping,
@@ -136,7 +139,7 @@
                 address: {
                     firstName: document.getElementById('shipFirstName').value,
                     lastName: document.getElementById('shipLastName').value,
-                    email: document.getElementById('shipEmail').value,
+                    email: shipEmail,
                     phone: document.getElementById('shipPhone').value,
                     street: document.getElementById('shipAddress').value,
                     city: document.getElementById('shipCity').value,
