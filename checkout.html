@@ -105,7 +105,7 @@
             const cart = Store.getCart();
             if (cart.length === 0) { window.location.href = 'cart.html'; return; }
             const subtotal = Store.getCartTotal();
-            const shipping = subtotal >= 1999 ? 0 : 149;
+            const shipping = subtotal >= 500 ? 0 : 50;
             document.getElementById('orderSummary').innerHTML = `
         <h3>Order Summary</h3>
         ${cart.map(item => {
@@ -123,7 +123,7 @@
             const orderId = generateOrderId();
             const cart = Store.getCart();
             const subtotal = Store.getCartTotal();
-            const shipping = subtotal >= 1999 ? 0 : 149;
+            const shipping = subtotal >= 500 ? 0 : 50;
             const payment = document.querySelector('input[name="payment"]:checked').value;
 
             const order = {
